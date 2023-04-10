@@ -1,16 +1,14 @@
 import cv2 as cv
 
-def piece_recognition(filename: str) -> str:
+def piece_recognition(img) -> str:
     """Reconocimiento del tipo de pieza utilizando la librería OpenCV
 
     Args:
-        filename (str): Ruta de la imagen a clasificar
+        img (Mat): Imagen a clasificar
 
     Returns:
         str: Tipo de ficha
     """
-    img = cv.imread(filename)
-    # cv.imshow("Imagen original", img)
 
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     # cv.imshow("Escala de grises", gray)
