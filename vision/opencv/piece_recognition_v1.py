@@ -86,5 +86,4 @@ def piece_recognition(img) -> str:
 
     type_piece = f"{n_dots_up}x{n_dots_down}"
 
-    cv.waitKey(5000)
     return type_piece
