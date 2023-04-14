@@ -3,22 +3,18 @@ import imutils
 from typing import Tuple
 
 def piece_recognition(img, verbose=False, size=1e4) -> Tuple[bool, str]:
-    """Reconocimiento del tipo de pieza utilizando la librería OpenCV
+    """Reconocimiento del tipo de pieza utilizando la libreria OpenCV
 
     Args:
         img (Mat): Imagen a clasificar
         verbose (bool): Mostrar mensajes de seguimiento o no
-        size (float): Área de la imagen total en píxeles (width*height)
+        size (float): Area de la imagen total en píxeles (width*height)
     Returns:
         str: Tipo de ficha
     """
 
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     # cv.imshow("Escala de grises", gray)
-
-    # El problema de Canny es que luego detectamos contornos duplicados
-    # canny = cv.Canny(gray, 100, 150)
-    # cv.imshow("Canny", canny)
 
     thresh, binarized = cv.threshold(gray, 0, 255, cv.THRESH_BINARY+cv.THRESH_OTSU)
     # cv.imshow(f"Imagen binarizada con umbral: {thresh}", binarized)
