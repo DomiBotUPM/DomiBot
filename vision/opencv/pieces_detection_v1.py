@@ -15,13 +15,14 @@ def pieces_detection(img, size: float, preprocess=False, verbose=False, visualiz
         visualize (bool, optional): Visualizar imágenes intermedias. Defaults to False.
 
     Returns:
-        List[tuple]: Lista de piezas detectadas. Se indica: contorno rectangular, centro, (ancho,alto) y ángulo de rotación de la pieza.
+        List[tuple]: Lista de piezas detectadas. Se indica: contorno rectangular, centro, (ancho,alto) y ángulo de rotación de la pieza en º.
     """
+    img_i = img.copy()
     # Preprocesamiento de la imagen
     if preprocess:
-        processed_img = preprocessing_img(img, visualize=False)
+        processed_img = preprocessing_img(img_i, visualize=False)
     else:
-        processed_img = img
+        processed_img = img_i
         
     # Detectar contornos
     contours, _ = cv.findContours(processed_img, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
@@ -43,8 +44,8 @@ def pieces_detection(img, size: float, preprocess=False, verbose=False, visualiz
             box = np.int64(cv.boxPoints((center, (width,height), angle)))
             pieces.append((box, np.round(center,3), (round(width,3), round(height,3)), round(angle,3)))
             if visualize:
-                cv.drawContours(img,[box],0,(255,0,0), thickness=2)
-                cv.imshow("Deteccion de piezas", img)
+                cv.drawContours(img_i,[box],0,(255,0,0), thickness=2)
+                cv.imshow("Deteccion de piezas", img_i)
         if verbose:
             print(f"Area: {area}")
             print(f"Area del rectangulo: {width}*{height} = {width*height}")

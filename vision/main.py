@@ -2,6 +2,7 @@ import os
 import cv2 as cv
 from opencv.pieces_recognition_v1 import pieces_recognition
 from opencv.pieces_detection_v1 import pieces_detection
+from opencv.pieces_location import pieces_location
 import time
 from datetime import datetime
 
@@ -11,10 +12,13 @@ from datetime import datetime
 def test_with_image(filename):
     img = cv.imread(filename)
     cv.imshow("Imagen real", img)
-    recognitions = pieces_recognition(img, size=img.shape[0]*img.shape[1], preprocess=True, verbose=False, visualize=True)
-    # detections = pieces_detection(img, size=img.shape[0]*img.shape[1], preprocess=True, verbose=False, visualize=True)
+    recognitions = pieces_recognition(img, size=img.shape[0]*img.shape[1], preprocess=True, visualize=True)
+    detections = pieces_detection(img, size=img.shape[0]*img.shape[1], preprocess=True, visualize=True)
     if len(recognitions):
         print(f"Se han reconocido {len(recognitions)} piezas")
+        locations = pieces_location(recognitions, img=img, visualize=True)
+        for loc in locations:
+            print(loc)
         # print(recognitions)
     else:
         print(f"No se ha podido reconocer ninguna pieza")
@@ -23,7 +27,7 @@ def test_with_image(filename):
 
 def test_with_video(channel=1):
     # Capura a partir de la cámara
-    capture = cv.VideoCapture(1)
+    capture = cv.VideoCapture(channel)
 
     width = capture.get(cv.CAP_PROP_FRAME_WIDTH)
     height = capture.get(cv.CAP_PROP_FRAME_HEIGHT)
@@ -31,11 +35,10 @@ def test_with_video(channel=1):
     while True:
         ret, frame = capture.read()
         cv.imshow('Video', frame)
-        recognitions = pieces_recognition(frame, size=width*height, verbose=False, visualize=True)
-        # detections = pieces_detection(img, size=img.shape[0]*img.shape[1], preprocess=True, verbose=False, visualize=True)
+        recognitions = pieces_recognition(frame, size=width*height, preprocess=True, visualize=True)
+        detections = pieces_detection(frame, size=width*height, preprocess=True, visualize=True)
         if len(recognitions):
             print(f"Se han reconocido {len(recognitions)} piezas")
-            print(recognitions)
         else:
             print(f"No se ha podido reconocer ninguna pieza")
         time.sleep(0.2)

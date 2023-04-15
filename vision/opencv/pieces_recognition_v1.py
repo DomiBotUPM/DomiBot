@@ -94,13 +94,14 @@ def pieces_recognition(img: cv.Mat, size=1e4, preprocess=False, verbose=False, v
         verbose (bool): Mostrar mensajes de seguimiento. Defaults to False.
         visualize (bool): Visualizar imágenes intermedias. Defaults to False.
     Returns:
-        List[dict]: Indica las piezas reconocidas. Datos de la pieza: contorno, centro, (ancho,alto), ángulo de rotación y tipo.
+        List[dict]: Lista de piezas reconocidas. Datos de la pieza: contorno, centro en px, (ancho,alto) en px, ángulo de rotación en º y tipo.
     """
+    img_i = img.copy()
     # Preprocesamiento de la imagen
     if preprocess:
-        processed_img = preprocessing_img(img, visualize=False)
+        processed_img = preprocessing_img(img_i, visualize=False)
     else:
-        processed_img = img
+        processed_img = img_i
     pieces = pieces_detection(processed_img, size, verbose=verbose, visualize=False)
     
     recognitions = []
@@ -111,20 +112,20 @@ def pieces_recognition(img: cv.Mat, size=1e4, preprocess=False, verbose=False, v
         piece_type, dot_contours, line_contour = _piece_recognition_from_mask(masked, angle, verbose=verbose)
         recognitions.append({'contour': contour, 'center': center, 'size_px': (width, height), 'angle': angle, 'type': piece_type})
         if visualize:
-            cv.drawContours(img,[contour],0,(255,0,0),thickness=2)
+            cv.drawContours(img_i,[contour],0,(255,0,0),thickness=2)
             for c in dot_contours:
                 radius_c = round(abs(np.sqrt((c[1][0] - c[0][0])**2 + (c[1][1] - c[0][1])**2))/2)
                 center_c = c[0] + (c[2] - c[0])/2
                 cx = round(center_c[0])
                 cy = round(center_c[1])
-                cv.circle(img, (cx,cy), radius_c, color=(0,255,0), thickness=1)
+                cv.circle(img_i, (cx,cy), radius_c, color=(0,255,0), thickness=1)
             if len(line_contour):
-                cv.drawContours(img,[line_contour[0]],0,(0,0,255),thickness=1)
+                cv.drawContours(img_i,[line_contour[0]],0,(0,0,255),thickness=1)
             cx = round(center[0])
             cy = round(center[1])
-            cv.rectangle(img, (cx-12, cy-6), (cx+10, cy+6), (255,255,255), thickness=-1)
-            cv.putText(img, piece_type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
-            cv.imshow("Imagen con contornos", img)
+            cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+6), (255,255,255), thickness=-1)
+            cv.putText(img_i, piece_type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
+            cv.imshow("Reconocimiento de piezas", img_i)
         if verbose:
             print(f"Pieza de tipo {piece_type}")
     
