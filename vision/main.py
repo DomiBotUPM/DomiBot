@@ -1,5 +1,6 @@
 import os
 import cv2 as cv
+from opencv.piece_recognition_v2 import piece_recognition
 from opencv.pieces_recognition_v1 import pieces_recognition
 from opencv.pieces_detection_v1 import pieces_detection
 from opencv.pieces_location import pieces_location
@@ -9,14 +10,27 @@ from datetime import datetime
 
 # tamaño fichas: 3.8x1.9 cm
 
-def test_with_image(filename):
+def test_piece(filename):
     img = cv.imread(filename)
     cv.imshow("Imagen real", img)
-    recognitions = pieces_recognition(img, size=img.shape[0]*img.shape[1], preprocess=True, visualize=True)
-    detections = pieces_detection(img, size=img.shape[0]*img.shape[1], preprocess=True, visualize=True)
+    img_i = img.copy()
+    recognition = piece_recognition(img_i)
+    if len(recognition):
+        print(f"La pieza es de tipo {recognition}")
+    else:
+        print(f"No se ha podido reconocer ninguna pieza")
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+
+
+def test_with_image(filename, visualize=True):
+    img = cv.imread(filename)
+    cv.imshow("Imagen real", img)
+    recognitions = pieces_recognition(img, size=img.shape[0]*img.shape[1], preprocess=True, visualize=visualize)
+    detections = pieces_detection(img, size=img.shape[0]*img.shape[1], preprocess=True, visualize=visualize)
     if len(recognitions):
         print(f"Se han reconocido {len(recognitions)} piezas")
-        locations = pieces_location(recognitions, img=img, visualize=True)
+        locations = pieces_location(recognitions, img=img, visualize=visualize)
         for loc in locations:
             print(loc)
         # print(recognitions)
@@ -25,7 +39,7 @@ def test_with_image(filename):
     cv.waitKey(0)
     cv.destroyAllWindows()
 
-def test_with_video(channel=1):
+def test_with_video(channel=1, visualize=True):
     # Capura a partir de la cámara
     capture = cv.VideoCapture(channel)
 
@@ -35,8 +49,8 @@ def test_with_video(channel=1):
     while True:
         ret, frame = capture.read()
         cv.imshow('Video', frame)
-        recognitions = pieces_recognition(frame, size=width*height, preprocess=True, visualize=True)
-        detections = pieces_detection(frame, size=width*height, preprocess=True, visualize=True)
+        recognitions = pieces_recognition(frame, size=width*height, preprocess=True, visualize=visualize)
+        detections = pieces_detection(frame, size=width*height, preprocess=True, visualize=visualize)
         if len(recognitions):
             print(f"Se han reconocido {len(recognitions)} piezas")
         else:
@@ -54,6 +68,12 @@ def save_img(img):
     cv.imwrite(filename_dest, img)
 
 
+# Probar directamente desde la cámara
+# test_with_video(channel=1)
+
+# Probar con imagen
 path_dir = "fotos_ur3/"
-filename = os.path.join(path_dir, "20230412_194329.jpg")
-test_with_image(filename)
+
+for file in os.listdir(path_dir)[0:5]:
+    filename = os.path.join(path_dir, file)
+    test_with_image(filename)

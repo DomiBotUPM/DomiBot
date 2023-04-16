@@ -102,17 +102,18 @@ def pieces_recognition(img: cv.Mat, size=1e4, preprocess=False, verbose=False, v
         processed_img = preprocessing_img(img_i, visualize=False)
     else:
         processed_img = img_i
-    pieces = pieces_detection(processed_img, size, verbose=verbose, visualize=False)
+    detections = pieces_detection(processed_img, size, verbose=verbose, visualize=False)
     
     recognitions = []
-    for contour, center, (width, height), angle in pieces:
+    for detection in detections:
         mask = np.zeros(processed_img.shape, np.uint8)
-        cv.fillPoly(mask, [contour], color=(255))
+        cv.fillPoly(mask, [detection['contour']], color=(255))
         masked = cv.bitwise_and(processed_img, mask)
-        piece_type, dot_contours, line_contour = _piece_recognition_from_mask(masked, angle, verbose=verbose)
-        recognitions.append({'contour': contour, 'center': center, 'size_px': (width, height), 'angle': angle, 'type': piece_type})
+        piece_type, dot_contours, line_contour = _piece_recognition_from_mask(masked, detection['angle'], verbose=verbose)
+        detection['type_piece'] = piece_type
+        recognitions.append(detection)
         if visualize:
-            cv.drawContours(img_i,[contour],0,(255,0,0),thickness=2)
+            cv.drawContours(img_i,[detection['contour']],0,(255,0,0),thickness=2)
             for c in dot_contours:
                 radius_c = round(abs(np.sqrt((c[1][0] - c[0][0])**2 + (c[1][1] - c[0][1])**2))/2)
                 center_c = c[0] + (c[2] - c[0])/2
@@ -121,8 +122,8 @@ def pieces_recognition(img: cv.Mat, size=1e4, preprocess=False, verbose=False, v
                 cv.circle(img_i, (cx,cy), radius_c, color=(0,255,0), thickness=1)
             if len(line_contour):
                 cv.drawContours(img_i,[line_contour[0]],0,(0,0,255),thickness=1)
-            cx = round(center[0])
-            cy = round(center[1])
+            cx = round(detection['center'][0])
+            cy = round(detection['center'][1])
             cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+6), (255,255,255), thickness=-1)
             cv.putText(img_i, piece_type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
             cv.imshow("Reconocimiento de piezas", img_i)
