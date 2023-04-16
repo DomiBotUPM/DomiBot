@@ -3,12 +3,12 @@ import imutils
 from typing import Tuple
 
 def piece_recognition(img, verbose=False, size=1e4) -> Tuple[bool, str]:
-    """Reconocimiento del tipo de pieza utilizando la libreria OpenCV
+    """Reconocimiento del tipo de pieza utilizando la librería OpenCV
 
     Args:
         img (Mat): Imagen a clasificar
         verbose (bool): Mostrar mensajes de seguimiento o no
-        size (float): Area de la imagen total en píxeles (width*height)
+        size (float): Área de la imagen total en píxeles (width*height)
     Returns:
         str: Tipo de ficha
     """
@@ -101,7 +101,7 @@ def piece_recognition(img, verbose=False, size=1e4) -> Tuple[bool, str]:
             print(f"Punto de inicio {(x,y)} y área {w}*{h}={w*h}")
         cv.rectangle(img,(x,y), (x+w,y+h), color=(255,0,0), thickness=1)
         cv.imshow("Imagen con contornos", img)
-        cv.waitKey(500)
+        cv.waitKey(100)
     
     # Separamos los puntos en dos grupos
     n_dots_up = len([dot for dot in dots if dot[index_pos] > ref[index_pos]])
