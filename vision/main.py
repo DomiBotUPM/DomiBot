@@ -21,6 +21,8 @@ def test_with_image(filename):
     cv.waitKey(0)
     cv.destroyAllWindows()
 
+    return recognitions
+
 def test_with_video(channel=1):
     # Capura a partir de la cámara
     capture = cv.VideoCapture(1)
@@ -51,6 +53,9 @@ def save_img(img):
     cv.imwrite(filename_dest, img)
 
 
-path_dir = "fotos_ur3/"
-filename = os.path.join(path_dir, "20230412_194329.jpg")
-test_with_image(filename)
+path_dir = "vision/fotos_ur3/"
+filename = os.path.join(path_dir, "CADENA.jpg")
+r = test_with_image(filename)
+
+
+print(r)
