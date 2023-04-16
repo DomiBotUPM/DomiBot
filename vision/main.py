@@ -68,6 +68,7 @@ def save_img(img):
     cv.imwrite(filename_dest, img)
 
 
+
 # Probar directamente desde la cámara
 # test_with_video(channel=1)
 
@@ -77,3 +78,4 @@ path_dir = "fotos_ur3/"
 for file in os.listdir(path_dir)[0:5]:
     filename = os.path.join(path_dir, file)
     test_with_image(filename)
+
