@@ -1,25 +1,26 @@
 import cv2 as cv
 
-def preprocessing_img(img: cv.Mat, visualize=False):
+def preprocessing_img(img: cv.Mat, open_size=(1,1), visualize=False) -> cv.Mat:
     """Preprocesamiento de la imagen, aplicando filtros y operaciones morfológicas
 
     Args:
         img (Mat): Imagen
-        visualize (bool, optional): Definir si se quiere visualizar o no las imágenes intermedias. Defaults to False.
+        open (int): Definir el tamaño del kernel para realizar la operación de apertura
+        visualize (bool, optional): Definir si se quiere visualizar o no las imágenes resultantes. Defaults to False.
 
     Returns:
         processed_img: Imagen procesada.
     """
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    # blur = cv.GaussianBlur(gray, (3,3), cv.BORDER_DEFAULT)
+    blur = cv.GaussianBlur(gray, (1,1), cv.BORDER_DEFAULT)
     
-    thresh, binarized = cv.threshold(gray, 0, 255, cv.THRESH_BINARY+cv.THRESH_OTSU)
-    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
-    morph_img = cv.morphologyEx(binarized, cv.MORPH_CLOSE, kernel)
+    thresh, binarized = cv.threshold(blur, 0, 255, cv.THRESH_BINARY+cv.THRESH_OTSU)
+    kernel = cv.getStructuringElement(cv.MORPH_RECT, open_size)
+    morph_img = cv.morphologyEx(binarized, cv.MORPH_OPEN, kernel, iterations=5)
     
     if visualize:
         cv.imshow("Escala de grises", gray)
         cv.imshow(f"Imagen binarizada con umbral: {thresh}", binarized)
-        cv.imshow(f"Imagen binarizada tras apertura", morph_img)
+        cv.imshow(f"Imagen binarizada tras apertura de {open}", morph_img)
     
     return morph_img
