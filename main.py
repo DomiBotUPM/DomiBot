@@ -9,9 +9,13 @@ domino_vision = DominoVision(visualize=True, verbose=False)
 
 # Probar con imagenes
 path_dir = os.path.abspath("vision/fotos_ur3/")
+
+
 i = 0
 for file in os.listdir(path_dir)[:]:
     filename = os.path.join(path_dir, file)
     domino_vision.test_with_image(filename)
+
     cv.waitKey(0)
+
     
