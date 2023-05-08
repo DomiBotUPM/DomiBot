@@ -77,7 +77,7 @@ class PiecesDetector:
             ratio = width/height
             # Para que sea una pieza el ancho debe ser la mitad que el alto y debe ser al menos de un tamaño concreto
             if width*height > min_area_pieza: 
-                if (ratio > 0.45 and ratio < 0.55):
+                if (ratio > 0.45 and ratio < 0.55):  
                     box = np.int64(cv.boxPoints((center, (width,height), angle)))
                     mask = np.zeros(self.processed_img.shape, np.uint8)
                     cv.fillPoly(mask, [box], color=(255))

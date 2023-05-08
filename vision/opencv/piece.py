@@ -24,26 +24,17 @@ class Piece:
         else:
             return False
         
-    # def esVertical(self): # vertical u horizontal
-    #     # h = max(self.contour[0,:]) - min(self.contour[0,:])
-    #     # v = max(self.contour[1,:]) - min(self.contour[1,:])
-    #     return (self.size[1] > self.size[0]) ^ (self.angle > 45)
-    
-    # def getRealValue(self):
-    #     if self.size[1] > self.size[0]:
-    #         if self.angle > 45:
-    #             # horizontal
-    #             return self.dots[0]
-    #         else:
-    #             # vertical
-    #             return self.dots[1]
-    #     else:
-    #         if self.angle > 45:
-    #             # vertical
-    #             return self.dots[0]
-    #         else:
-    #             # horizontal
-    #             return self.dots[1]
+    def esVertical(self):
+        if abs(self.angle - 90) < 30:
+            return True
+        else:
+            return False
+        
+    def esHorizontal(self):
+        if abs(self.angle) < 30:
+            return True
+        else:
+            return False
 
     def sumaValor(self):
         return int(self.type[0]) + int(self.type[2])

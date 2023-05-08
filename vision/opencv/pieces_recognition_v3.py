@@ -135,10 +135,6 @@ class PiecesIdentifier:
         piece.dots = [n_dots_up, n_dots_down]
         # El primer valor siempre debe ser mayor igual que el segundo
         piece.type = f"{max(n_dots_up,n_dots_down)}x{min(n_dots_up,n_dots_down)}"
-        
-        print([piece.dots, piece.angle])
-        cv.imshow("masked", masked)
-        cv.waitKey(0)
 
         if self.verbose: print(f"Pieza de tipo {piece.type}")
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
