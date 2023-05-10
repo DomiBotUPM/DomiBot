@@ -98,12 +98,15 @@ class PiecesIdentifier:
                 if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}")
 
         # Giramos la pieza para tenerlo en posición horizontal o vertical
-        if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
-        img_r = imutils.rotate(masked, piece.angle)
-        rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
-        ref_min = 0.01*piece_area
-        if self.verbose: print(f"Área mínima de referencia: {ref_min}")
-        filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
+        cond_angle = piece.angle < 0.95*90 and piece.angle > 1.05*piece.angle
+        cond_angle = cond_angle and abs(piece.angle) > 5
+        if cond_angle:
+            if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
+            img_r = imutils.rotate(masked, piece.angle)
+            rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+            ref_min = 0.01*piece_area
+            if self.verbose: print(f"Área mínima de referencia: {ref_min}")
+            filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
         
         # Comprobamos si está en vertical u horizontal
         (x,y,w,h) = cv.boundingRect(filtered_contours[0])

@@ -11,6 +11,7 @@ def preprocessing_img(img: cv.Mat, open_size=(1,1), visualize=False) -> cv.Mat:
     Returns:
         processed_img: Imagen procesada.
     """
+    # img[:,:,1] = 0
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     blur = cv.GaussianBlur(gray, (1,1), cv.BORDER_DEFAULT)
     
