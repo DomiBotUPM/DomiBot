@@ -87,7 +87,7 @@ class PiecesDetector:
                         angle = angle + 90
                     pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
                     if self.verbose: print(f"Area del contorno: {area}. Area del rectangulo: {round(width,1)}*{round(height,1)} = {round(width*height,2)}")
-                if (ratio > 1.9 and ratio < 2.1): # horizontal o vertival pero con un ángulo lógico
+                if (ratio > 1.9 and ratio < 2.1): # horizontal o vertical pero con un ángulo lógico
                     box = np.int64(cv.boxPoints((center, (width,height), angle)))
                     mask = np.zeros(self.processed_img.shape, np.uint8)
                     cv.fillPoly(mask, [box], color=(255))

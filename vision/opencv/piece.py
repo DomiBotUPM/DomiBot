@@ -12,8 +12,6 @@ class Piece:
         self.center_mm = 0.0
         self.size_mm = 0.0
         self.dots: List[int] = []
-
-        self.real_v = 0.0
         
     def __dir__(self):
         print(f"Angulo: {self.angle}, size: {self.size}, type: {self.type}, center: {self.center}")
@@ -38,6 +36,8 @@ class Piece:
 
     def sumaValor(self):
         return int(self.type[0]) + int(self.type[2])
+    
+
     
     
     

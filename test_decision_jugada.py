@@ -1,16 +1,20 @@
 import os
 import decision_jugada.domino_game as domigame
+import decision_jugada.colocar_pieza as colopieza
+from decision_jugada.logica import logica
 from vision.vision_interface import DominoVision
 import cv2
 
+# esto son constantes que me he inventado
 ORDEN_NORMA = 2
 LONGITUD_PIEZA  = 80
-ANCHURA_PIEZA   = 40
+ANCHURA_PIEZA   = 40 
 UMBRAL_DIST     = LONGITUD_PIEZA * 1.5
 ALTO_IMG        = 480
 ANCHO_IMG       = 640
 ALTO_MANO_ROBOT = 140
-
+LIMITE1 = 100
+LIMITE2 = 540
 
 domino_vision = DominoVision(visualize=True, verbose=False)
 
@@ -18,23 +22,19 @@ domino_vision = DominoVision(visualize=True, verbose=False)
 
 path_dir = os.path.abspath("vision/fotos_ur3/")
 
-# file = "PIEZAS_TEST.jpg"
-# file = "CADENA3.jpg"  
-file = "20230412_194341.jpg"
+
+file = "CADENA4.jpg"  
 filename = os.path.join(path_dir, file)
 # img = cv2.imread(filename)
 # size = img.shape[0]*img.shape[1]
 
 domino_vision.test_with_image(filename)
 
+print("domino_vision.pieces: ")
 print([[pieza.dots, pieza.type] for pieza in domino_vision.pieces])
 
-# print([[pieza.esVertical(), pieza.type, pieza.getRealValue()] for pieza in domino_vision.pieces])
-# print([domino_vision.pieces[0].contour, pieza.type], domino_vision.pieces[0].type)
-
-
-# # Separa las piezas según sean del robot o del tablero
-# piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, ALTO_IMG, ALTO_MANO_ROBOT)
+# Separa las piezas según sean del robot o del tablero
+piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, ALTO_IMG, ALTO_MANO_ROBOT)
 
 # print("piezas_tablero: ")
 # print([pieza.type for pieza in piezas_tablero])
@@ -55,3 +55,14 @@ print([[pieza.dots, pieza.type] for pieza in domino_vision.pieces])
 # if "pieza_tablero" in movimiento:
 #     print(movimiento["pieza_tablero"].type)
 #     print(movimiento["pieza_robot"].type)
+#     print(movimiento["direccion"])
+
+# origen, angulo_origen, destino, angulo_destino = colopieza.colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
+
+# print("colocarPieza")
+# print(origen, angulo_origen, destino, angulo_destino)
+
+
+origen2, angulo_origen2, destino2, angulo_destino2 =  logica(piezas_tablero, piezas_robot)
+
+print(origen2, angulo_origen2, destino2, angulo_destino2)

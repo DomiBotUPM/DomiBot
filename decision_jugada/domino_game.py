@@ -2,7 +2,6 @@ import sys
 sys.path.append("..\vision")
 
 import numpy as np
-# from operator import itemgetter
 from vision.opencv.piece import Piece
 
 def distanciaPiezas(pieza1: Piece, pieza2: Piece, orden):
@@ -47,12 +46,12 @@ def numeroDiferenteExtremo(pieza_extremo: Piece, pieza_interior: Piece):
 
 def extremosTablero(tablero: Piece):
     if len(tablero) == 0:
-        return [0, 1, 2, 3, 4, 5, 6]
+        return []
     elif len(tablero) == 1: # en teoría siempre debería ser doble pero bueeeno
         if tablero[0].esDoble():
-            return [tablero[0].type[0]]
+            return [tablero[0].type[0], tablero[0].type[0]]
         else:
-            return [tablero[0].type[2]]
+            return [tablero[0].type[0], tablero[0].type[2]]
         
     nc1 = numeroDiferenteExtremo(tablero[0], tablero[1])
     nc2 = numeroDiferenteExtremo(tablero[-1], tablero[-2])
@@ -62,6 +61,9 @@ def extremosTablero(tablero: Piece):
 def jugadasDisponibles(tablero: Piece, piezas_robot: Piece):
     extremos = extremosTablero(tablero)
 
+    if len(extremos) == 0:
+        return piezas_robot, piezas_robot
+    
     posibles_jugadas_1 = []
     posibles_jugadas_2 = []
 
@@ -117,18 +119,21 @@ def tableroVirtual(piezas: Piece, umbral_dist, orden):
 
     if piezas_restantes:
         tablero.reverse()
-    else:
-        return tablero
-    # print([pieza.type for pieza in tablero])
+        while piezas_restantes:
+            ind, dist = masCercanos(tablero[-1], piezas_restantes, orden)
+            if dist[ind[0]] <= umbral_dist:
+                tablero.append(piezas_restantes[ind[0]])
+                piezas_restantes.pop(ind[0])
+                # print([pieza.type for pieza in tablero])
+            else:
+                break
 
-    while piezas_restantes:
-        ind, dist = masCercanos(tablero[-1], piezas_restantes, orden)
-        if dist[ind[0]] <= umbral_dist:
-            tablero.append(piezas_restantes[ind[0]])
-            piezas_restantes.pop(ind[0])
-            # print([pieza.type for pieza in tablero])
-        else:
-            break
+    # comprobar siempre rama superior o inferior
+    if tablero[0].center[1] < tablero[-1].center[1] - umbral_dist / 2: # el 10 este está por ejemplo
+        tablero.reverse() 
+    elif tablero[0].center[1] < tablero[-1].center[1] + umbral_dist / 2:
+        if tablero[0].center[0] < tablero[-1].center[0]:
+            tablero.reverse()
     
     return tablero
 
@@ -147,17 +152,17 @@ def decidirMovimiento(tablero: Piece, piezas_robot: Piece): # aquí viene toda l
             ind_orden2 = sorted(range(len(suma_valores2)), key=lambda k: suma_valores2[k]) # stack overflow
 
             if suma_valores1[ind_orden1[-1]] >= suma_valores2[ind_orden2[-1]]:
-                return {'movimiento': 'jugada', 'pieza_tablero': tablero[0], 'pieza_robot': posibles_jugadas1[ind_orden1[-1]]}
+                return {'movimiento': 'jugada', 'pieza_tablero': tablero[0], 'pieza_robot': posibles_jugadas1[ind_orden1[-1]], 'direccion': 'abajo'}
             else:
-                return {'movimiento': 'jugada', 'pieza_tablero': tablero[-1], 'pieza_robot': posibles_jugadas2[ind_orden2[-1]]}
+                return {'movimiento': 'jugada', 'pieza_tablero': tablero[-1], 'pieza_robot': posibles_jugadas2[ind_orden2[-1]], 'direccion': 'arriba'}
         else:
-            return {'movimiento': 'jugada', 'pieza_tablero': tablero[0], 'pieza_robot': posibles_jugadas1[ind_orden1[-1]]}
+            return {'movimiento': 'jugada', 'pieza_tablero': tablero[0], 'pieza_robot': posibles_jugadas1[ind_orden1[-1]], 'direccion': 'abajo'}
         
     elif len(posibles_jugadas2): # hay jugadas posibles para la última ficha del tablero pero no para la primera
         #para elegir ficha de mayor valor
         suma_valores2 = [pieza.sumaValor() for pieza in posibles_jugadas2]
         ind_orden2 = sorted(range(len(suma_valores2)), key=lambda k: suma_valores2[k]) # stack overflow
-        return {'movimiento': 'jugada', 'pieza_tablero': tablero[-1], 'pieza_robot': posibles_jugadas2[ind_orden2[-1]]}
+        return {'movimiento': 'jugada', 'pieza_tablero': tablero[-1], 'pieza_robot': posibles_jugadas2[ind_orden2[-1]], 'direccion': 'arriba'}
     
     else:
         return {'movimiento': 'robar'}
