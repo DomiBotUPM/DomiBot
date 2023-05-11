@@ -93,15 +93,15 @@ class PiecesDetector:
                     cv.fillPoly(mask, [box], color=(255))
                     pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
                     if self.verbose: print(f"Area del contorno: {area}. Area del rectangulo: {round(width,1)}*{round(height,1)} = {round(width*height,2)}")
-                                
+                
         if self.verbose: 
             print(f"Nº de elementos: {len(contours)}. Nº de piezas detectadas: {len(pieces)}")
             print("Se procede a buscar piezas anomalas")
         # Se calcula la media
-        mean_area = round(np.mean([piece.get_area() for piece in pieces]),2)
+        mean_area = round(np.mean([piece.size[0]*piece.size[1] for piece in pieces]),2)
         
-        pieces_big = [p for p in pieces if p.get_area() >= 1.5*mean_area]
-        pieces = [p for p in pieces if p.get_area() < 1.5*mean_area]
+        pieces_big = [p for p in pieces if p.size[0]*p.size[1] >= 1.5*mean_area]
+        pieces = [p for p in pieces if p.size[0]*p.size[1] < 1.5*mean_area]
         
         if self.visualize: 
             for piece in pieces:
@@ -113,13 +113,14 @@ class PiecesDetector:
             if self.verbose: print(f"Pieza utilizada como referencia para ratio. Ancho: {min(pieces[0].size[0], pieces[0].size[1])}. Ratio: {round(self.ratio_px2mm, 2)}")
             for i, piece in enumerate(pieces_big):
                 if self.verbose: print(f"Índice de pieza actual: {i}")
-                if self.verbose: print(f"Se ha encontrado una pieza anómala de tamaño: {piece.get_area()}. Tamaño de pieza de referencia: {mean_area}.")
+                if self.verbose: print(f"Se ha encontrado una pieza anómala de tamaño: {piece.size[0]*piece.size[1]}. Tamaño de pieza de referencia: {mean_area}.")
                 # Se separa la "pieza" detectada como una sola, en las verdaderas que había
                 split_pieces = self.split_piece(piece)
                 for piece in split_pieces:
                     pieces.append(piece)
                     if self.visualize:
                         cv.drawContours(img_i,[piece.contour],0,(0,255,0), thickness=2)
+                        # cv.imshow(f"Mascara pieza separada {i}", piece.mask)
         
             if self.verbose:  print(f"Nº de elementos: {len(contours)}. Nº de piezas detectadas: {len(pieces)}")
         if self.visualize: cv.imshow("Deteccion de piezas", img_i)
@@ -168,6 +169,10 @@ class PiecesDetector:
                 box_piece = np.int64(cv.boxPoints((center, (new_width,new_height), angle)))
                 new_mask = np.zeros(self.processed_img.shape, np.uint8)
                 cv.fillPoly(new_mask, [box_piece], color=(255))
+
+                # modificar aquí!!!
+                # ¿Qué ángulo hay que poner? todo
+
                 pieces.append(Piece(new_mask, box_piece, np.round(center,3), angle, size=(round(new_width,3), round(new_height,3))))
                 if self.verbose: print(f"Nueva pieza encontrada. Area de la línea separadora: {area}. Area de la pieza: {round(new_width,1)}*{round(new_height,1)} = {round(new_width*new_height,2)}")
         

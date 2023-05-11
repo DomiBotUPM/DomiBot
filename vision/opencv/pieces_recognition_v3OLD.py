@@ -121,7 +121,7 @@ class PiecesIdentifier:
         for contour in filtered_contours[1:]:
             (x,y,w,h) = cv.boundingRect(contour)
             ratio = h/w
-            if ratio < 0.5 or ratio > 2:
+            if ratio < 0.5 or ratio > 2: # línea separadora 
                 ref = (x,y)
             else:
                 dots.append((x,y))
@@ -135,7 +135,7 @@ class PiecesIdentifier:
         piece.dots = [n_dots_up, n_dots_down]
         # El primer valor siempre debe ser mayor igual que el segundo
         piece.type = f"{max(n_dots_up,n_dots_down)}x{min(n_dots_up,n_dots_down)}"
-        
+
         if self.verbose: print(f"Pieza de tipo {piece.type}")
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
         return piece
