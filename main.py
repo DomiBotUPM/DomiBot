@@ -9,6 +9,7 @@ domino_vision.test_with_video(channel=1)
 # domino_vision.view_video(channel=1)
 
 # Probar con imagenes
+
 # path_dir = os.path.abspath("vision/fotos_ur3/")
 # i = 0
 # for file in os.listdir(path_dir)[:]:
