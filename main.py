@@ -5,8 +5,21 @@ import cv2 as cv
 domino_vision = DominoVision(visualize=True, verbose=False)
 
 # Probar directamente desde la cámara
-domino_vision.test_with_video(channel=1)
+# domino_vision.test_with_video(channel=1)
 # domino_vision.view_video(channel=1)
+
+capture = cv.VideoCapture(1)
+
+ret, frame = capture.read()
+
+
+cv.imshow('Video', frame)
+
+cv.waitKey(0)
+
+print('a')
+
+domino_vision.save_img(frame)
 
 # Probar con imagenes
 

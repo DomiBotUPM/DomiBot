@@ -23,7 +23,7 @@ domino_vision = DominoVision(visualize=True, verbose=False)
 path_dir = os.path.abspath("vision/fotos_ur3/")
 
 
-file = "CADENA4.jpg"  
+file = "20230512_174703.jpg"  
 filename = os.path.join(path_dir, file)
 # img = cv2.imread(filename)
 # size = img.shape[0]*img.shape[1]
@@ -31,10 +31,13 @@ filename = os.path.join(path_dir, file)
 domino_vision.test_with_image(filename)
 
 print("domino_vision.pieces: ")
-print([[pieza.dots, pieza.type] for pieza in domino_vision.pieces])
+# print([[pieza.dots, pieza.center, pieza.center_mm, pieza.angle] for pieza in domino_vision.pieces])
 
-# Separa las piezas según sean del robot o del tablero
-piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, ALTO_IMG, ALTO_MANO_ROBOT)
+for pieza in domino_vision.pieces:
+    print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
+
+# # Separa las piezas según sean del robot o del tablero
+# piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, ALTO_IMG, ALTO_MANO_ROBOT)
 
 # print("piezas_tablero: ")
 # print([pieza.type for pieza in piezas_tablero])
@@ -63,6 +66,6 @@ piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, A
 # print(origen, angulo_origen, destino, angulo_destino)
 
 
-origen2, angulo_origen2, destino2, angulo_destino2 =  logica(piezas_tablero, piezas_robot)
+# origen2, angulo_origen2, destino2, angulo_destino2 =  logica(piezas_tablero, piezas_robot)
 
-print(origen2, angulo_origen2, destino2, angulo_destino2)
+# print(origen2, angulo_origen2, destino2, angulo_destino2)
