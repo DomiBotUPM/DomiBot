@@ -95,10 +95,10 @@ class PiecesIdentifier:
                 elif inner_area < 0.07*piece_area:
                     line_contours.append(box) # línea separadora
                     
-                if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}")
+                if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}.")
 
         # Giramos la pieza para tenerlo en posición horizontal o vertical
-        cond_angle = piece.angle < 0.95*90 and piece.angle > 1.05*piece.angle
+        cond_angle = piece.angle < 0.95*90 or piece.angle > 1.05*piece.angle
         cond_angle = cond_angle and abs(piece.angle) > 5
         if cond_angle:
             if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
