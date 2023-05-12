@@ -1,27 +1,68 @@
-from vision.opencv.pieces_recognition_v1 import pieces_recognition
-import decision_jugada.domino_game as dg
 import os
+import decision_jugada.domino_game as domigame
+import decision_jugada.colocar_pieza as colopieza
+from decision_jugada.logica import logica
+from vision.vision_interface import DominoVision
 import cv2
-import math
 
+# esto son constantes que me he inventado
+ORDEN_NORMA = 2
 LONGITUD_PIEZA  = 80
-ANCHURA_PIEZA   = 40
-ORDEN_NORMA     = 2
+ANCHURA_PIEZA   = 40 
 UMBRAL_DIST     = LONGITUD_PIEZA * 1.5
+ALTO_IMG        = 480
+ANCHO_IMG       = 640
+ALTO_MANO_ROBOT = 140
+LIMITE1 = 100
+LIMITE2 = 540
+
+domino_vision = DominoVision(visualize=True, verbose=False)
+
+# Probar con imagenes
+
+path_dir = os.path.abspath("vision/fotos_ur3/")
 
 
-#copypaste de la parte de Jean Paul
-path_dir = "vision/fotos_ur3/"
-filename = os.path.join(path_dir, "CADENA2.jpg")
-img = cv2.imread(filename)
+file = "CADENA4.jpg"  
+filename = os.path.join(path_dir, file)
+# img = cv2.imread(filename)
+# size = img.shape[0]*img.shape[1]
 
-piezas = pieces_recognition(img, size=img.shape[0]*img.shape[1], preprocess=True, verbose=False, visualize=True)
+domino_vision.test_with_image(filename)
 
-print([pieza['type'] for pieza in piezas])
+print("domino_vision.pieces: ")
+print([[pieza.dots, pieza.type] for pieza in domino_vision.pieces])
 
-tablero = dg.tableroVirtual(piezas, UMBRAL_DIST, ORDEN_NORMA)
+# Separa las piezas según sean del robot o del tablero
+piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, ALTO_IMG, ALTO_MANO_ROBOT)
 
-print([pieza['type'] for pieza in tablero])
+# print("piezas_tablero: ")
+# print([pieza.type for pieza in piezas_tablero])
+# print("piezas_robot: ")
+# print([pieza.type for pieza in piezas_robot])
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# # Crea tablero virtual (ordena las piezas)
+# tablero = domigame.tableroVirtual(piezas_tablero, UMBRAL_DIST, ORDEN_NORMA)
+
+# print("tablero: ")
+# print([pieza.type for pieza in tablero])
+
+# # ¿qué pieza se puede colocar?
+# movimiento = domigame.decidirMovimiento(tablero, piezas_robot)
+
+# print("movimiento: ")
+# print(movimiento["movimiento"])
+# if "pieza_tablero" in movimiento:
+#     print(movimiento["pieza_tablero"].type)
+#     print(movimiento["pieza_robot"].type)
+#     print(movimiento["direccion"])
+
+# origen, angulo_origen, destino, angulo_destino = colopieza.colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
+
+# print("colocarPieza")
+# print(origen, angulo_origen, destino, angulo_destino)
+
+
+origen2, angulo_origen2, destino2, angulo_destino2 =  logica(piezas_tablero, piezas_robot)
+
+print(origen2, angulo_origen2, destino2, angulo_destino2)

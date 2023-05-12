@@ -25,6 +25,9 @@ class Piece:
         self.type = type
         self.dots: List[int] = []
         
+    def __dir__(self):
+        print(f"Angulo: {self.angle}, size: {self.size}, type: {self.type}, center: {self.center}")
+
     def get_area(self, area_px=True) -> float:
         """Obtener el área de la pieza, ya sea en píxeles o en milímetros
 
@@ -57,9 +60,28 @@ class Piece:
             return True
         else:
             return False
+          
+    def esDoble(self):
+        if self.type[0] == self.type[2]:
+            return True
+        else:
+            return False
         
+    def esVertical(self):
+        if abs(self.angle - 90) < 30:
+
+    def esHorizontal(self):
+        if abs(self.angle) < 30:
+            return True
+        else:
+            return False
+
+    def sumaValor(self):
+        return int(self.type[0]) + int(self.type[2])
+    
     def __ne__(self, piece: 'Piece') -> bool:
         return not self.__eq__(piece)
         
     def __str__(self):
         return f"Pice - angle: {round(self.angle, 2)}, size: {np.round(self.size, 1)}, type: {self.type}, center: {np.round(self.center,1)}"
+
