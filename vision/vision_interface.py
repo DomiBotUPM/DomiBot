@@ -9,6 +9,8 @@ from .opencv.pieces_detection_v3 import PiecesDetector
 from .opencv.preprocessing import preprocessing_img
 from .opencv.piece import Piece
 
+import operator
+
 class DominoVision:
     def __init__(self, visualize=False, verbose=False) -> None:
         self.visualize = visualize
@@ -195,3 +197,41 @@ class DominoVision:
         capture.release()
         cv.waitKey(0)
         cv.destroyAllWindows()
+
+    def ordenar_piezas(self, piezas: Piece):
+        """Ordenar piezas de derecha a izquierda, de arriba a abajo. 
+
+        Args:
+            piezas
+        """
+        longitud = max(piezas[0].size)
+        piezas_ordenadas = []
+
+        # ordenar en función de su horizontal
+        valor_horizontal = [pieza.center[0] for pieza in piezas]
+        ind_orden = sorted(range(len(piezas)), key=lambda k: valor_horizontal[k]) # stack overflow
+        piezas_ordenadas_dcha_a_izda = [piezas[ind_orden[-i-1]] for i in range(len(piezas))] # orden inverso porque no sé cómo hacerlo
+
+        piezas_misma_vertical = []
+        
+        for pieza in piezas_ordenadas_dcha_a_izda:
+            if not piezas_misma_vertical:
+                piezas_misma_vertical.append(pieza)
+            elif abs(pieza.center[0] - piezas_misma_vertical[0].center[0]) < longitud:
+                piezas_misma_vertical.append(pieza)
+            else:
+                # ordenar subgrupos de piezas de misma horizontal, en función de su vertical
+                valor_vertical = [pieza_mv.center[0] for pieza_mv in piezas_misma_vertical]
+                ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
+                piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]
+                piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
+                piezas_misma_vertical = [pieza]
+
+        # una última vez ordenar en función de su vertical
+        valor_vertical = [pieza_mv.center[0] for pieza_mv in piezas_misma_vertical]
+        ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
+        piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]
+        piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
+
+        return piezas_ordenadas
+

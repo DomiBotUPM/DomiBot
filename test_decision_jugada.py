@@ -31,9 +31,12 @@ filename = os.path.join(path_dir, file)
 domino_vision.test_with_image(filename)
 
 print("domino_vision.pieces: ")
-# print([[pieza.dots, pieza.center, pieza.center_mm, pieza.angle] for pieza in domino_vision.pieces])
-
 for pieza in domino_vision.pieces:
+    print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
+
+piezas_ordenadas = domino_vision.ordenar_piezas(domino_vision.pieces)
+print("piezas_ordenadas: ")
+for pieza in piezas_ordenadas:
     print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
 
 # # Separa las piezas según sean del robot o del tablero
