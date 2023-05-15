@@ -32,4 +32,4 @@ def logica(piezas_tablero: Piece, piezas_robot: Piece):
     # Coordenadas del movimiento (origne, destino) -> coordenadas imagen
     origen, angulo_origen, destino, angulo_destino = colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
 
-    return origen, angulo_origen, destino, angulo_destino
+    return [origen[0], origen[1], angulo_origen, destino[0], destino[1], angulo_destino]

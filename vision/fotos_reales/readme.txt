@@ -1,1 +1,0 @@
-Algunas fotos reales de mis fichas, con el fondo verde de una cartulina e intentando poner varios tipos de iluminaciones.
