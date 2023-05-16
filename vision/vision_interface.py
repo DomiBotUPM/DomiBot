@@ -4,8 +4,8 @@ import time
 from datetime import datetime
 from typing import List
 
-from .opencv.pieces_recognition_v3 import PiecesIdentifier
-from .opencv.pieces_detection_v3 import PiecesDetector
+from .opencv.pieces_recognition_v2 import PiecesIdentifier
+from .opencv.pieces_detection_v2 import PiecesDetector
 from .opencv.preprocessing import preprocessing_img
 from .opencv.piece import Piece
 
@@ -46,13 +46,13 @@ class DominoVision:
         self.pieces = identifier.pieces_recognition()
         return self.pieces
     
-    def pieces_detection(self, img: cv.Mat, size: float, preprocess=True) -> List[Piece]:
+    def pieces_detection(self, img: cv.Mat, size: float, size_mm: float=0.0, preprocess=True) -> List[Piece]:
         """Deteccion de las fichas de domino presentes en la zona
 
         Returns:
             List[Piece]: Lista de piezas detectadas.
         """
-        detector = PiecesDetector(img, size=size, preprocess=preprocess, visualize=self.visualize, verbose=self.verbose)
+        detector = PiecesDetector(img, size=size, size_mm=size_mm, preprocess=preprocess, visualize=self.visualize, verbose=self.verbose)
         detector.detect_pieces()
         detector.locate_pieces()
         if self.new_turn:
@@ -132,7 +132,7 @@ class DominoVision:
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-    def test_with_video(self, channel=1) -> None:
+    def test_with_video(self, channel: int=1, size_mm: float=0.0) -> None:
         """Test rápido en tiempo real. Se realizan tanto detecciones como reconocimientos cíclicamente.
 
         Args:
@@ -150,7 +150,7 @@ class DominoVision:
             if self.visualize:
                 cv.imshow('Video', frame)
             # cv.waitKey(0)
-            detections = self.pieces_detection(frame, size)
+            detections = self.pieces_detection(frame, size, size_mm)
             recognitions = self.pieces_recognition(frame, size, pieces=detections)
             if self.verbose or True:
                 if len(recognitions):
@@ -160,7 +160,7 @@ class DominoVision:
             
             # if self.detect_new_turn():
             #     print("Nuevo turno!")
-            time.sleep(0.5)
+            time.sleep(2)
             if cv.waitKey(20) & 0xFF==ord('d'):
                 break
         capture.release()

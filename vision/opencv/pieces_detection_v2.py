@@ -29,8 +29,8 @@ class PiecesDetector:
         self.processed_img = self.__preprocess_img(img)
         # Si nos dan el tamaño físico, podemos obtener directamente el ratio px/mm y el área de una pieza estándar en píxeles
         if size_mm > 0:
-            self.ratio_px2mm = size_mm / size
-            self.ref_piece_area = self.ratio_px2mm**2 * self.PIECE_WIDTH_MM * self.PIECE_WIDTH_MM
+            self.ratio_px2mm = np.sqrt(size_mm / size)
+            self.ref_piece_area = (self.PIECE_WIDTH_MM * self.PIECE_HEIGHT_MM) / (self.ratio_px2mm**2)
         else:
             self.ratio_px2mm = 0.0
             self.ref_piece_area = 0.0
@@ -111,6 +111,8 @@ class PiecesDetector:
         else:
             ref_area = round(np.mean([piece.get_area() for piece in pieces]),2)
         
+        if self.verbose: print(f"Referencia para detectar piezas anomalas: {ref_area}")
+        
         pieces_big = [p for p in pieces if p.get_area() >= 1.5*ref_area]
         pieces = [p for p in pieces if p.get_area() < 1.5*ref_area]
         
@@ -164,7 +166,8 @@ class PiecesDetector:
             
             # Condicion de tamaño de la línea separadora si tenemos la referencia del tamaño de pieza
             if self.ref_piece_area > 0:
-                cond_size = width > 0.5*(self.ratio_px2mm*self.PIECE_WIDTH_MM) and width*height < 0.25*self.ref_piece_area
+                print(f"Size: {round(width,1)}x{round(height,1)}={round(width*height,2)}")
+                cond_size = max(width, height) > 0.5*(self.ratio_px2mm*self.PIECE_WIDTH_MM) and width*height < 0.25*self.ref_piece_area
             else: # Si no tenemos la referencia
                 cond_size = width*height < 1e-2*self.size
             

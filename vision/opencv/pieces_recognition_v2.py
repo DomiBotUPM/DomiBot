@@ -92,7 +92,7 @@ class PiecesIdentifier:
                 
                 if ratio > 0.5 and ratio < 2 and inner_area  < 0.05*piece_area:
                     dot_contours.append(box) # punto
-                elif inner_area < 0.07*piece_area:
+                elif inner_area < 0.1*piece_area:
                     line_contours.append(box) # línea separadora
                     
                 if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}.")
@@ -104,9 +104,13 @@ class PiecesIdentifier:
             if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
             img_r = imutils.rotate(masked, piece.angle)
             rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
-            ref_min = 0.01*piece_area
+            ref_min = 0.005*piece_area
             if self.verbose: print(f"Área mínima de referencia: {ref_min}")
             filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
+        
+        if len(filtered_contours) == 0:
+            piece.type = "error"
+            return piece
         
         # Comprobamos si está en vertical u horizontal
         (x,y,w,h) = cv.boundingRect(filtered_contours[0])
@@ -119,7 +123,7 @@ class PiecesIdentifier:
         if self.verbose: 
             print(f"Pieza vertical: {is_vertical}")
             print(f"Hay {len(filtered_contours) - 1} contornos internos")
-            
+        
         piece_area = cv.contourArea(filtered_contours[0])
         if self.verbose: print(f"Area pieza grande: {piece_area}")
         
@@ -142,6 +146,9 @@ class PiecesIdentifier:
         piece.dots = [n_dots_up, n_dots_down]
         # El primer valor siempre debe ser mayor igual que el segundo
         piece.type = f"{max(n_dots_up,n_dots_down)}x{min(n_dots_up,n_dots_down)}"
+        
+        # if piece.type == "9x0":
+        #     cv.imshow("Caso 9x0", img_r)
         
         if self.verbose: print(f"Pieza de tipo {piece.type}")
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)

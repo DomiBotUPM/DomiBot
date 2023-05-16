@@ -69,7 +69,7 @@ class Piece:
         
     def esVertical(self):
         if abs(self.angle - 90) < 30:
-
+            pass
     def esHorizontal(self):
         if abs(self.angle) < 30:
             return True
