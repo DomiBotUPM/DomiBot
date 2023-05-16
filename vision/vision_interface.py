@@ -12,7 +12,7 @@ from .opencv.piece import Piece
 import operator
 
 class DominoVision:
-    def __init__(self, visualize=False, verbose=False) -> None:
+    def __init__(self, visualize=False, verbose=False):
         self.visualize = visualize
         self.verbose = verbose
         self.pieces = []
@@ -26,7 +26,7 @@ class DominoVision:
         self.new_turn = True
         self.flag_changing_turn = False
 
-    def preprocess_img(self, img: cv.Mat, open_size=(1,1)) -> cv.Mat:
+    def preprocess_img(self, img, open_size=(1,1)):
         """Preprocesamiento de la imagen, aplicando filtros y operaciones morfológicas
 
         Args:
@@ -38,7 +38,7 @@ class DominoVision:
         """
         return preprocessing_img(img, open_size=open_size, visualize=self.visualize)
     
-    def pieces_recognition(self, img: cv.Mat, size: float, pieces=[], preprocess=True):
+    def pieces_recognition(self, img, size, pieces=[], preprocess=True):
         """Identificacion de piezas
 
         Returns:
@@ -48,7 +48,7 @@ class DominoVision:
         self.pieces = identifier.pieces_recognition()
         return self.pieces
     
-    def pieces_detection(self, img: cv.Mat, size: float, preprocess=True) -> List[Piece]:
+    def pieces_detection(self, img, size, preprocess=True):
         """Deteccion de las fichas de domino presentes en la zona
 
         Returns:
@@ -111,7 +111,7 @@ class DominoVision:
             self.new_turn = False
         return self.new_turn
 
-    def test_with_image(self, filename: str) -> None:
+    def test_with_image(self, filename: str):
         """Test rápido con una imagen. Se realizan tanto detecciones como reconocimientos
 
         Args:
@@ -134,7 +134,7 @@ class DominoVision:
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-    def test_with_video(self, channel=1) -> None:
+    def test_with_video(self, channel=1):
         """Test rápido en tiempo real. Se realizan tanto detecciones como reconocimientos cíclicamente.
 
         Args:
@@ -169,7 +169,7 @@ class DominoVision:
         cv.waitKey(0)
         cv.destroyAllWindows()
     
-    def save_img(self, img: cv.Mat) -> None:
+    def save_img(self, img):
         """Guardar imagen. Se guardara en la carpeta vision/fotos_ur3.
 
         Args:
@@ -198,7 +198,7 @@ class DominoVision:
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-    def ordenar_piezas(self, piezas: Piece):
+    def ordenar_piezas(self, piezas):
         """Ordenar piezas de derecha a izquierda, de arriba a abajo. 
 
         Args:

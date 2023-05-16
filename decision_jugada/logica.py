@@ -13,7 +13,7 @@ from vision.opencv.piece import Piece
 
 
 
-def logica(piezas_tablero: Piece, piezas_robot: Piece):
+def logica(piezas_tablero, piezas_robot):
     ORDEN_NORMA = 2
     LONGITUD_PIEZA  = max(piezas_tablero[0].size)
     ANCHURA_PIEZA   = min(piezas_tablero[0].size) 
