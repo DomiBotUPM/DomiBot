@@ -1,6 +1,6 @@
 import cv2 as cv
 
-def preprocessing_img(img: cv.Mat, open_size=(1,1), visualize=False) -> cv.Mat:
+def preprocessing_img(img, open_size=(1,1), visualize=False):
     """Preprocesamiento de la imagen, aplicando filtros y operaciones morfológicas
 
     Args:

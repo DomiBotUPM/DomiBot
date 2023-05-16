@@ -7,7 +7,7 @@ from .piece import Piece
 
 
 class PiecesDetector:
-    def __init__(self, img: cv.Mat, size: float, size_mm: float = 0.0, preprocess=True, verbose=False, visualize=False):
+    def __init__(self, img, size, size_mm, preprocess=True, verbose=False, visualize=False):
         """Inicializar detector de piezas
 
         Args:
@@ -58,7 +58,7 @@ class PiecesDetector:
         self.img = new_img
         self.size = new_size
     
-    def detect_pieces(self) -> List[Piece]:
+    def detect_pieces(self):
         """Deteccion de las fichas de domino presentes en la zona
 
         Returns:
@@ -145,7 +145,7 @@ class PiecesDetector:
         if self.verbose: print("*"*20, "Se ha finalizado la deteccion de piezas", "*"*20)
         return pieces
     
-    def split_piece(self, piece) -> List[Piece]:
+    def split_piece(self, piece):
         """Division de una pieza anormalmente grande en sus respectivas internas
 
         Returns:
@@ -198,7 +198,7 @@ class PiecesDetector:
         if self.verbose: print("-"*5, "Se finaliza la separacion de piezas", "-"*5)
         return pieces
     
-    def locate_piece(self, piece: Piece, img: cv.Mat=None, copy_img=True) -> Tuple[float, Tuple[float,float], float]:
+    def locate_piece(self, piece, img=None, copy_img=True):
         """Localizar la pieza con respecto a la imagen o captura realizada
 
         Args:
@@ -230,7 +230,7 @@ class PiecesDetector:
         
         return center, (width, height), piece.angle
 
-    def locate_pieces(self) -> List[Tuple[float, Tuple[float,float], float]]:
+    def locate_pieces(self):
         """Localizar la pieza con respecto a la imagen o captura realizada
         
         Returns:

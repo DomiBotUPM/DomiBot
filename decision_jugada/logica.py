@@ -13,7 +13,7 @@ from vision.opencv.piece import Piece
 
 
 
-def logica(piezas_tablero: Piece, piezas_robot: Piece):
+def logica(piezas_tablero, piezas_robot):
     ORDEN_NORMA = 2
     LONGITUD_PIEZA  = max(piezas_tablero[0].size)
     ANCHURA_PIEZA   = min(piezas_tablero[0].size) 
@@ -32,4 +32,4 @@ def logica(piezas_tablero: Piece, piezas_robot: Piece):
     # Coordenadas del movimiento (origne, destino) -> coordenadas imagen
     origen, angulo_origen, destino, angulo_destino = colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
 
-    return origen, angulo_origen, destino, angulo_destino
+    return [origen[0], origen[1], angulo_origen, destino[0], destino[1], angulo_destino]

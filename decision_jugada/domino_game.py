@@ -4,13 +4,13 @@ sys.path.append("..\vision")
 import numpy as np
 from vision.opencv.piece import Piece
 
-def distanciaPiezas(pieza1: Piece, pieza2: Piece, orden):
+def distanciaPiezas(pieza1, pieza2, orden):
     c1 = np.array(pieza1.center)
     c2 = np.array(pieza2.center)
 
     return np.linalg.norm(c1 - c2, ord = orden)
 
-def masCercanos(pieza_elegida: Piece, piezas: Piece, orden):
+def masCercanos(pieza_elegida, piezas, orden):
     distancias = []
 
     for pieza in piezas:
@@ -32,7 +32,7 @@ def numeroComun(pieza1: Piece, pieza2: Piece):
     else: 
         return -1
     
-def numeroDiferenteExtremo(pieza_extremo: Piece, pieza_interior: Piece):
+def numeroDiferenteExtremo(pieza_extremo, pieza_interior):
     if pieza_extremo.type[0] == pieza_interior.type[0]:
         return pieza_extremo.type[2]
     elif pieza_extremo.type[0] == pieza_interior.type[2]:
@@ -44,7 +44,7 @@ def numeroDiferenteExtremo(pieza_extremo: Piece, pieza_interior: Piece):
     else: 
         return -1
 
-def extremosTablero(tablero: Piece):
+def extremosTablero(tablero):
     if len(tablero) == 0:
         return []
     elif len(tablero) == 1: # en teoría siempre debería ser doble pero bueeeno
@@ -58,7 +58,7 @@ def extremosTablero(tablero: Piece):
     return [nc1, nc2]
 
 
-def jugadasDisponibles(tablero: Piece, piezas_robot: Piece):
+def jugadasDisponibles(tablero, piezas_robot):
     extremos = extremosTablero(tablero)
 
     if len(extremos) == 0:
@@ -81,7 +81,7 @@ def jugadasDisponibles(tablero: Piece, piezas_robot: Piece):
 # #######################################
 
 
-def clasificarPiezas(piezas: Piece, alto_imagen, alto_zona_robot):
+def clasificarPiezas(piezas, alto_imagen, alto_zona_robot):
     piezas_tablero= [] 
     piezas_robot = []
 
@@ -94,7 +94,7 @@ def clasificarPiezas(piezas: Piece, alto_imagen, alto_zona_robot):
     return piezas_tablero, piezas_robot
 
 
-def tableroVirtual(piezas: Piece, umbral_dist, orden):
+def tableroVirtual(piezas, umbral_dist, orden):
     if len(piezas) == 1:
         return piezas
     elif len(piezas) == 2:
@@ -138,7 +138,7 @@ def tableroVirtual(piezas: Piece, umbral_dist, orden):
     return tablero
 
 
-def decidirMovimiento(tablero: Piece, piezas_robot: Piece): # aquí viene toda la IA :)
+def decidirMovimiento(tablero, piezas_robot): # aquí viene toda la IA :)
     posibles_jugadas1, posibles_jugadas2 = jugadasDisponibles(tablero, piezas_robot)
 
     if len(posibles_jugadas1): # hay jugadas posibles para la primera ficha del tablero

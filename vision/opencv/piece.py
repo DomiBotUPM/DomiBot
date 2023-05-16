@@ -2,7 +2,7 @@ import numpy as np
 from typing import List
 
 class Piece:
-    def __init__(self, mask: np.ndarray, contour: np.ndarray, center: tuple, angle: float, size: tuple, type: str = "") -> None:
+    def __init__(self, mask, contour, center, angle, size, type):
         """Clase que define una pieza de dominó
 
         Args:
@@ -42,7 +42,7 @@ class Piece:
         else:
             return self.size_mm[0]*self.size_mm[1]
         
-    def __eq__(self, piece: 'Piece') -> bool:
+    def __eq__(self, piece):
         """Comparación con otra pieza. Para que sea la misma deben tener una rotación y un centro similar, además de ser del mismo tipo.
 
         Args:
@@ -69,7 +69,10 @@ class Piece:
         
     def esVertical(self):
         if abs(self.angle - 90) < 30:
-            pass
+            return True
+        else:
+            return False
+
     def esHorizontal(self):
         if abs(self.angle) < 30:
             return True
@@ -79,7 +82,7 @@ class Piece:
     def sumaValor(self):
         return int(self.type[0]) + int(self.type[2])
     
-    def __ne__(self, piece: 'Piece') -> bool:
+    def __ne__(self, piece) -> bool:
         return not self.__eq__(piece)
         
     def __str__(self):

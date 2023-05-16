@@ -4,13 +4,15 @@ import time
 from datetime import datetime
 from typing import List
 
-from .opencv.pieces_recognition_v2 import PiecesIdentifier
-from .opencv.pieces_detection_v2 import PiecesDetector
+from .opencv.pieces_recognition_v2_ import PiecesIdentifier
+from .opencv.pieces_detection_v2_ import PiecesDetector
 from .opencv.preprocessing import preprocessing_img
 from .opencv.piece import Piece
 
+import operator
+
 class DominoVision:
-    def __init__(self, visualize=False, verbose=False) -> None:
+    def __init__(self, visualize=False, verbose=False):
         self.visualize = visualize
         self.verbose = verbose
         self.pieces = []
@@ -24,7 +26,7 @@ class DominoVision:
         self.new_turn = True
         self.flag_changing_turn = False
 
-    def preprocess_img(self, img: cv.Mat, open_size=(1,1)) -> cv.Mat:
+    def preprocess_img(self, img, open_size=(1,1)):
         """Preprocesamiento de la imagen, aplicando filtros y operaciones morfológicas
 
         Args:
@@ -36,7 +38,7 @@ class DominoVision:
         """
         return preprocessing_img(img, open_size=open_size, visualize=self.visualize)
     
-    def pieces_recognition(self, img: cv.Mat, size: float, pieces=[], preprocess=True):
+    def pieces_recognition(self, img, size, pieces=[], preprocess=True):
         """Identificacion de piezas
 
         Returns:
@@ -109,7 +111,7 @@ class DominoVision:
             self.new_turn = False
         return self.new_turn
 
-    def test_with_image(self, filename: str) -> None:
+    def test_with_image(self, filename: str):
         """Test rápido con una imagen. Se realizan tanto detecciones como reconocimientos
 
         Args:
@@ -167,7 +169,7 @@ class DominoVision:
         cv.waitKey(0)
         cv.destroyAllWindows()
     
-    def save_img(self, img: cv.Mat) -> None:
+    def save_img(self, img):
         """Guardar imagen. Se guardara en la carpeta vision/fotos_ur3.
 
         Args:
@@ -195,3 +197,41 @@ class DominoVision:
         capture.release()
         cv.waitKey(0)
         cv.destroyAllWindows()
+
+    def ordenar_piezas(self, piezas):
+        """Ordenar piezas de derecha a izquierda, de arriba a abajo. 
+
+        Args:
+            piezas
+        """
+        longitud = max(piezas[0].size)
+        piezas_ordenadas = []
+
+        # ordenar en función de su horizontal
+        valor_horizontal = [pieza.center[0] for pieza in piezas]
+        ind_orden = sorted(range(len(piezas)), key=lambda k: valor_horizontal[k]) # stack overflow
+        piezas_ordenadas_dcha_a_izda = [piezas[ind_orden[-i-1]] for i in range(len(piezas))] # orden inverso porque no sé cómo hacerlo
+
+        piezas_misma_vertical = []
+        
+        for pieza in piezas_ordenadas_dcha_a_izda:   
+            if not piezas_misma_vertical:
+                piezas_misma_vertical.append(pieza)
+            elif abs(pieza.center[0] - piezas_misma_vertical[0].center[0]) < longitud:
+                piezas_misma_vertical.append(pieza)
+            else:
+                # ordenar subgrupos de piezas de misma horizontal, en función de su vertical
+                valor_vertical = [pieza_mv.center[1] for pieza_mv in piezas_misma_vertical]
+                ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
+                piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]
+                piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
+                piezas_misma_vertical = [pieza]
+
+        # una última vez ordenar en función de su vertical
+        valor_vertical = [pieza_mv.center[1] for pieza_mv in piezas_misma_vertical]
+        ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
+        piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]
+        piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
+
+        return piezas_ordenadas
+

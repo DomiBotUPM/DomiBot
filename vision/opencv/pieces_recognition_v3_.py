@@ -5,11 +5,11 @@ import numpy as np
 import math
 
 from .preprocessing import preprocessing_img
-from .pieces_detection_v2 import PiecesDetector
+from .pieces_detection_v3_ import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
-    def __init__(self, img: cv.Mat, size: float, pieces: List[Piece]=[], preprocess=True, verbose=False, visualize=False):
+    def __init__(self, img, size, pieces=[], preprocess=True, verbose=False, visualize=False):
         """Inicializar detector de piezas
 
         Args:
@@ -32,13 +32,13 @@ class PiecesIdentifier:
         
         self.processed_img = self.__preprocess_img(img)
 
-    def __preprocess_img(self, img: cv.Mat):
+    def __preprocess_img(self, img):
         if self.preprocess:
             return preprocessing_img(img, visualize=False)
         else:
             return img
     
-    def __piece_recognition(self, piece: Piece, img: cv.Mat, copy_img=True) -> Piece:
+    def __piece_recognition(self, piece, img, copy_img=True):
         """Reconocimiento de pieza que ha sido aislada a partir de una máscara
 
         Args:
@@ -92,38 +92,26 @@ class PiecesIdentifier:
                 
                 if ratio > 0.5 and ratio < 2 and inner_area  < 0.05*piece_area:
                     dot_contours.append(box) # punto
-                elif inner_area < 0.1*piece_area:
+                elif inner_area < 0.07*piece_area:
                     line_contours.append(box) # línea separadora
                     
-                if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}.")
+                if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}")
 
         # Giramos la pieza para tenerlo en posición horizontal o vertical
-        cond_angle = piece.angle < 0.95*90 or piece.angle > 1.05*piece.angle
-        cond_angle = cond_angle and abs(piece.angle) > 5
-        if cond_angle:
-            if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
-            img_r = imutils.rotate(masked, piece.angle)
-            rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
-            ref_min = 0.005*piece_area
-            if self.verbose: print(f"Área mínima de referencia: {ref_min}")
-            filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
-        
-        if len(filtered_contours) == 0:
-            piece.type = "error"
-            return piece
-        
-        # Comprobamos si está en vertical u horizontal
-        (x,y,w,h) = cv.boundingRect(filtered_contours[0])
-        is_vertical = h/w > 1
-        # Definimos si comparamos con x o con y
-        index_pos = 0
-        if is_vertical:
-            index_pos = 1
+        if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
+        img_r = imutils.rotate(masked, piece.angle)
+        rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        ref_min = 0.01*piece_area
+        if self.verbose: print(f"Área mínima de referencia: {ref_min}")
+        filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
             
         if self.verbose: 
+            # Comprobamos si está en vertical u horizontal -> ahora mismo nos
+            (x,y,w,h) = cv.boundingRect(filtered_contours[0])
+            is_vertical = h/w > 1
             print(f"Pieza vertical: {is_vertical}")
             print(f"Hay {len(filtered_contours) - 1} contornos internos")
-        
+            
         piece_area = cv.contourArea(filtered_contours[0])
         if self.verbose: print(f"Area pieza grande: {piece_area}")
         
@@ -139,22 +127,20 @@ class PiecesIdentifier:
                 dots.append((x,y))
             if self.verbose: print(f"Area interna: {cv.contourArea(contour)}. Ratio: {round(ratio,2)}. Centro: {x,y}")
         # Separamos los puntos en dos grupos
-        n_dots_up = len([dot for dot in dots if dot[index_pos] < ref[index_pos]])
-        n_dots_down = len([dot for dot in dots if dot[index_pos] > ref[index_pos]])
+        # Siempre comparamos con x
+        n_dots_up = len([dot for dot in dots if dot[0] < ref[0]])
+        n_dots_down = len([dot for dot in dots if dot[0] > ref[0]])
         if self.verbose: print(f"Hay {len(dots)} puntos. Arriba/Izquierda: {n_dots_up}. Abajo/Derecha: {n_dots_down}")
-        
+
         piece.dots = [n_dots_up, n_dots_down]
         # El primer valor siempre debe ser mayor igual que el segundo
         piece.type = f"{max(n_dots_up,n_dots_down)}x{min(n_dots_up,n_dots_down)}"
-        
-        # if piece.type == "9x0":
-        #     cv.imshow("Caso 9x0", img_r)
         
         if self.verbose: print(f"Pieza de tipo {piece.type}")
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
         return piece
     
-    def __visualize_piece_contours(self, img_i, piece: Piece, dot_contours=[], line_contours=[]) -> None:
+    def __visualize_piece_contours(self, img_i, piece, dot_contours=[], line_contours=[]):
         cv.drawContours(img_i,[piece.contour],0,(255,0,0),thickness=2)
         for c in dot_contours:
             radius_c = round(abs(np.sqrt((c[1][0] - c[0][0])**2 + (c[1][1] - c[0][1])**2))/2)
@@ -170,7 +156,7 @@ class PiecesIdentifier:
         cv.putText(img_i, piece.type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
         cv.imshow("Reconocimiento de piezas", img_i)
     
-    def pieces_recognition(self) -> List[Piece]:
+    def pieces_recognition(self):
         """Identificacion de piezas utilizando la librería OpenCV
 
         Returns:
