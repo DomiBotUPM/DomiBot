@@ -1,5 +1,5 @@
 import os
-from vision.vision_interface import DominoVision
+from vision.vision_interface_ import DominoVision
 import cv2 as cv
 import sys
 

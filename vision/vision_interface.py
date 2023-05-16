@@ -4,8 +4,8 @@ import time
 from datetime import datetime
 from typing import List
 
-from .opencv.pieces_recognition_v2_ import PiecesIdentifier
-from .opencv.pieces_detection_v2_ import PiecesDetector
+from .opencv.pieces_recognition_v2 import PiecesIdentifier
+from .opencv.pieces_detection_v2 import PiecesDetector
 from .opencv.preprocessing import preprocessing_img
 from .opencv.piece import Piece
 
@@ -27,11 +27,11 @@ class DominoVision:
         self.flag_changing_turn = False
 
     def preprocess_img(self, img, open_size=(1,1)):
-        """Preprocesamiento de la imagen, aplicando filtros y operaciones morfológicas
+        """Preprocesamiento de la imagen, aplicando filtros y operaciones morfologicas
 
         Args:
             img (Mat): Imagen
-            open_size (int, int): Definir el tamaño del kernel para realizar la operación de apertura
+            open_size (int, int): Definir el tamano del kernel para realizar la operacion de apertura
 
         Returns:
             processed_img (Mat): Imagen procesada.
@@ -80,7 +80,7 @@ class DominoVision:
         is_change = len(not_coincidences) > 0
         if self.verbose:
             if is_change:
-                print(f"Se ha producido un cambio en las piezas del juego. Habían {len(self.pieces_old)} fichas y ahora hay {len(self.pieces)}.")
+                print(f"Se ha producido un cambio en las piezas del juego. Habian {len(self.pieces_old)} fichas y ahora hay {len(self.pieces)}.")
                 print(f"{len(not_coincidences)} piezas no coinciden")
             else:
                 print("Las piezas son las mismas")
@@ -90,7 +90,7 @@ class DominoVision:
     def detect_new_turn(self):
         if self.verbose: print("*"*20, "Comprobando cambio de turno", "*"*20)
         
-        # Detección de cambios
+        # Deteccion de cambios
         if self.detect_changes():
             self.coincidences = 0
             if not self.flag_changing_turn:
@@ -112,7 +112,7 @@ class DominoVision:
         return self.new_turn
 
     def test_with_image(self, filename: str):
-        """Test rápido con una imagen. Se realizan tanto detecciones como reconocimientos
+        """Test rapido con una imagen. Se realizan tanto detecciones como reconocimientos
 
         Args:
             filename (str): Ruta del archivo de la imagen
@@ -135,12 +135,12 @@ class DominoVision:
         cv.destroyAllWindows()
 
     def test_with_video(self, channel: int=1, size_mm: float=0.0) -> None:
-        """Test rápido en tiempo real. Se realizan tanto detecciones como reconocimientos cíclicamente.
+        """Test rapido en tiempo real. Se realizan tanto detecciones como reconocimientos ciclicamente.
 
         Args:
-            channel (int, optional): Se indica la cámara a utiizar
+            channel (int, optional): Se indica la camara a utiizar
         """
-        # Capura a partir de la cámara
+        # Capura a partir de la camara
         capture = cv.VideoCapture(channel)
 
         width = capture.get(cv.CAP_PROP_FRAME_WIDTH)
@@ -182,14 +182,14 @@ class DominoVision:
         cv.imwrite(filename_dest, img)
         
     def view_video(self, channel=1):
-        # Capura a partir de la cámara
+        # Capura a partir de la camara
         capture = cv.VideoCapture(channel)
         while True:
             ret, frame = capture.read()
             if not ret:
                 print("Hay un problema con la captura!")
             # else:
-            #     print("Captura con éxito")
+            #     print("Captura con exito")
             cv.imshow('Video', frame)
             time.sleep(0.1)
             if cv.waitKey(20) & 0xFF==ord('d'):
@@ -207,10 +207,10 @@ class DominoVision:
         longitud = max(piezas[0].size)
         piezas_ordenadas = []
 
-        # ordenar en función de su horizontal
+        # ordenar en funcion de su horizontal
         valor_horizontal = [pieza.center[0] for pieza in piezas]
         ind_orden = sorted(range(len(piezas)), key=lambda k: valor_horizontal[k]) # stack overflow
-        piezas_ordenadas_dcha_a_izda = [piezas[ind_orden[-i-1]] for i in range(len(piezas))] # orden inverso porque no sé cómo hacerlo
+        piezas_ordenadas_dcha_a_izda = [piezas[ind_orden[-i-1]] for i in range(len(piezas))] # orden inverso porque no se como hacerlo
 
         piezas_misma_vertical = []
         
@@ -220,14 +220,14 @@ class DominoVision:
             elif abs(pieza.center[0] - piezas_misma_vertical[0].center[0]) < longitud:
                 piezas_misma_vertical.append(pieza)
             else:
-                # ordenar subgrupos de piezas de misma horizontal, en función de su vertical
+                # ordenar subgrupos de piezas de misma horizontal, en funcion de su vertical
                 valor_vertical = [pieza_mv.center[1] for pieza_mv in piezas_misma_vertical]
                 ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
                 piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]
                 piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
                 piezas_misma_vertical = [pieza]
 
-        # una última vez ordenar en función de su vertical
+        # una ultima vez ordenar en funcion de su vertical
         valor_vertical = [pieza_mv.center[1] for pieza_mv in piezas_misma_vertical]
         ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
         piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]

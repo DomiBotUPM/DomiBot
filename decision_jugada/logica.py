@@ -6,9 +6,9 @@ from .domino_game import tableroVirtual, decidirMovimiento
 from vision.opencv.piece import Piece
 
 # LEER, IMPORTANTE
-# No sé si funciona esto porque está hecho muy a huevo y no he depurado casi nada. Solo funciona, 
-# si las piezas son horizontales y verticales, para lo cual hay que usar mi versión de la visión.
-# Esta versión mía de la visión (v3) solo funciona con piezas ligermaente separadas. En caso de tener
+# No se si funciona esto porque esta hecho muy a huevo y no he depurado casi nada. Solo funciona, 
+# si las piezas son horizontales y verticales, para lo cual hay que usar mi version de la vision.
+# Esta version mia de la vision (v3) solo funciona con piezas ligermaente separadas. En caso de tener
 # que robar, devuelve 0, 0, 0, 0...
 
 
@@ -18,7 +18,7 @@ def logica(piezas_tablero, piezas_robot):
     LONGITUD_PIEZA  = max(piezas_tablero[0].size)
     ANCHURA_PIEZA   = min(piezas_tablero[0].size) 
     UMBRAL_DIST     = LONGITUD_PIEZA * 1.5
-    # límites para no colocar en los extremos
+    # limites para no colocar en los extremos
     LIMITE1 = 100
     LIMITE2 = 540
 

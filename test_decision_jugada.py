@@ -2,7 +2,7 @@ import os
 import decision_jugada.domino_game as domigame
 import decision_jugada.colocar_pieza as colopieza
 from decision_jugada.logica import logica
-from vision.vision_interface import DominoVision
+from vision.vision_interface_ import DominoVision
 import cv2
 
 # esto son constantes que me he inventado
@@ -44,7 +44,7 @@ for pieza in domino_vision.pieces:
 # for pieza in piezas_ordenadas:
 #     print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
 
-# # Separa las piezas según sean del robot o del tablero
+# # Separa las piezas segun sean del robot o del tablero
 # piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, ALTO_IMG, ALTO_MANO_ROBOT)
 
 # print("piezas_tablero: ")

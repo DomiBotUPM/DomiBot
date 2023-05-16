@@ -12,10 +12,10 @@ class PiecesDetector:
 
         Args:
             img (Mat): Imagen
-            size (float): Area de la imagen total en píxeles
+            size (float): Area de la imagen total en pixeles
             preprocess (bool, optional): Realizar preprocesamiento de la imagen. Defaults to False.
             verbose (bool, optional): Mostrar mensajes de seguimiento. Defaults to False.
-            visualize (bool, optional): Visualizar imágenes intermedias. Defaults to False.
+            visualize (bool, optional): Visualizar imagenes intermedias. Defaults to False.
         """
         self.img = img
         self.size = size
@@ -27,7 +27,7 @@ class PiecesDetector:
         self.PIECE_HEIGHT_MM = 38
         
         self.processed_img = self.__preprocess_img(img)
-        # Si nos dan el tamaño físico, podemos obtener directamente el ratio px/mm y el área de una pieza estándar en píxeles
+        # Si nos dan el tamano fisico, podemos obtener directamente el ratio px/mm y el area de una pieza estandar en pixeles
         if size_mm > 0:
             self.ratio_px2mm = np.sqrt(size_mm / size)
             self.ref_piece_area = (self.PIECE_WIDTH_MM * self.PIECE_HEIGHT_MM) / (self.ratio_px2mm**2)
@@ -42,19 +42,19 @@ class PiecesDetector:
         else:
             return img_i
     
-    def get_ratio_px2mm_from_piece(self, piece: Piece) -> float:
-        """Obtener el ratio de conversión de píxeles a milímetros, a partir de una pieza. 
+    def get_ratio_px2mm_from_piece(self, piece):
+        """Obtener el ratio de conversion de pixeles a milimetros, a partir de una pieza. 
 
         Args:
             piece (Piece): Objeto de clase Piece
 
         Returns:
-            float: Ratio de conversión px --> mm
+            float: Ratio de conversion px --> mm
         """
         width = min(piece.size[0], piece.size[1])
         return self.PIECE_WIDTH_MM / width
         
-    def change_img(self, new_img: cv.Mat, new_size: float):
+    def change_img(self, new_img, new_size):
         self.img = new_img
         self.size = new_size
     
@@ -69,9 +69,9 @@ class PiecesDetector:
         
         # Detectar contornos
         contours, _ = cv.findContours(self.processed_img, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
-        filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Mínima área para un punto
+        filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Minima area para un punto
         
-        # Si no hay ningún contorno mínimamente grande, se finaliza la detección
+        # Si no hay ningun contorno minimamente grande, se finaliza la deteccion
         if len(filtered_contours) == 0:
             if self.verbose: print(f"No se ha detectado ningun contorno minimamente grande")
             return []
@@ -83,12 +83,12 @@ class PiecesDetector:
         else:
             min_area_piece = 7e-3*self.size
         
-        if self.verbose: print(f"Tamaño de referencia para detectar pieza: {min_area_piece}")
+        if self.verbose: print(f"Tamano de referencia para detectar pieza: {min_area_piece}")
         for contour in filtered_contours:
             center, (width,height), angle = cv.minAreaRect(contour)
             ratio = min(width, height)/ max(width,height)
             area = width*height
-            # Para que sea una pieza el ancho debe ser la mitad que el alto y debe ser al menos de un tamaño concreto
+            # Para que sea una pieza el ancho debe ser la mitad que el alto y debe ser al menos de un tamano concreto
             no_rectangle = min(width, height) > np.sqrt(min_area_piece/2)
             if area > min_area_piece and no_rectangle: # Buscamos que sea al menos un poco alargada
                 box = np.int64(cv.boxPoints((center, (width,height), angle)))
@@ -105,7 +105,7 @@ class PiecesDetector:
         
         if self.verbose: print("Se procede a buscar piezas anomalas")
         
-        # Si no se tiene la referencia del tamaño de una pieza, se calcula la media
+        # Si no se tiene la referencia del tamano de una pieza, se calcula la media
         if self.ref_piece_area > 0:
             ref_area =self.ref_piece_area
         else:
@@ -127,10 +127,10 @@ class PiecesDetector:
                 if self.verbose: print(f"Pieza utilizada como referencia para ratio. Ancho: {min(pieces[0].size[0], pieces[0].size[1])}. Ratio: {round(self.ratio_px2mm, 2)}")
             for i, piece in enumerate(pieces_big):
                 if self.verbose: 
-                    print(f"Índice de pieza actual: {i}")
-                    print(f"Se ha encontrado una pieza anómala de tamaño: {piece.get_area()}. Tamaño de pieza de referencia: {ref_area}.")
+                    print(f"Indice de pieza actual: {i}")
+                    print(f"Se ha encontrado una pieza anomala de tamano: {piece.get_area()}. Tamano de pieza de referencia: {ref_area}.")
                 
-                # Se separa la "pieza" detectada como una sola, en las verdaderas que había
+                # Se separa la "pieza" detectada como una sola, en las verdaderas que habia
                 split_pieces = self.split_piece(piece)
                 for piece in split_pieces:
                     pieces.append(piece)
@@ -156,28 +156,28 @@ class PiecesDetector:
         masked = cv.bitwise_and(self.processed_img, piece.mask)
         # Detectar contornos
         contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
-        filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Mínima área para un punto
-        # Encontrar solo las líneas separadoras de las piezas
+        filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Minima area para un punto
+        # Encontrar solo las lineas separadoras de las piezas
         pieces = []
         for contour in filtered_contours:
             area = cv.contourArea(contour)
             center, (width,height), angle = cv.minAreaRect(contour)
             ratio = min(width,height)/max(width,height)
             
-            # Condicion de tamaño de la línea separadora si tenemos la referencia del tamaño de pieza
+            # Condicion de tamano de la linea separadora si tenemos la referencia del tamano de pieza
             if self.ref_piece_area > 0:
                 print(f"Size: {round(width,1)}x{round(height,1)}={round(width*height,2)}")
                 cond_size = max(width, height) > 0.5*(self.ratio_px2mm*self.PIECE_WIDTH_MM) and width*height < 0.25*self.ref_piece_area
             else: # Si no tenemos la referencia
                 cond_size = width*height < 1e-2*self.size
             
-            # Para que sea una línea separadora el ratio debe ser muy pequeño o muy grande
+            # Para que sea una linea separadora el ratio debe ser muy pequeno o muy grande
             if ratio < 0.3 and cond_size:
                 box = np.int64(cv.boxPoints((center, (width,height), angle)))
                 mask = np.zeros(self.processed_img.shape, np.uint8)
                 cv.fillPoly(mask, [box], color=(255))
                 
-                if self.verbose: print(f"Encontrada línea separadora de {round(width,2)}x{round(height,2)}={round(width*height,2)}")
+                if self.verbose: print(f"Encontrada linea separadora de {round(width,2)}x{round(height,2)}={round(width*height,2)}")
                 # Con ayuda del ratio, se obtiene el contorno de la pieza
                 if width > height: # Horizontal
                     new_width = 19/self.ratio_px2mm
@@ -190,7 +190,7 @@ class PiecesDetector:
                 new_mask = np.zeros(self.processed_img.shape, np.uint8)
                 cv.fillPoly(new_mask, [box_piece], color=(255))
                 pieces.append(Piece(new_mask, box_piece, np.round(center,3), angle, size=(round(new_width,3), round(new_height,3))))
-                if self.verbose: print(f"Nueva pieza encontrada. Area de la línea separadora: {area}. Area de la pieza: {round(new_width,1)}*{round(new_height,1)} = {round(new_width*new_height,2)}")
+                if self.verbose: print(f"Nueva pieza encontrada. Area de la linea separadora: {area}. Area de la pieza: {round(new_width,1)}*{round(new_height,1)} = {round(new_width*new_height,2)}")
         
         if self.verbose: print(f"Nº de elementos: {len(filtered_contours)}. Nº de piezas detectadas: {len(pieces)}")
         # if self.visualize: cv.imshow("Separacion de piezas en el juego", img_i)
@@ -198,16 +198,16 @@ class PiecesDetector:
         if self.verbose: print("-"*5, "Se finaliza la separacion de piezas", "-"*5)
         return pieces
     
-    def locate_piece(self, piece, img=None, copy_img=True):
+    def locate_piece(self, piece, img, copy_img):
         """Localizar la pieza con respecto a la imagen o captura realizada
 
         Args:
-            piece (dict): Datos de pieza. Contendrá al menos el centro y el tamaño en píxeles, así como el ángulo de rotación.
+            piece (dict): Datos de pieza. Contendra al menos el centro y el tamano en pixeles, asi como el angulo de rotacion.
             img (Mat, optional): Imagen para visualizar. Si no se indica utiliza la que tiene el detector.
             copy_img (bool): Indica si se sobreescribe sobre la imagen o se carga una nueva
 
         Returns:
-            Tuple[float, Tuple[float,float], float]: Centro, tamaño en mm, y ángulo de rotación
+            Tuple[float, Tuple[float,float], float]: Centro, tamano en mm, y angulo de rotacion
         """
         if img is not None:
             img_i = img
@@ -234,13 +234,13 @@ class PiecesDetector:
         """Localizar la pieza con respecto a la imagen o captura realizada
         
         Returns:
-            List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y ángulo de rotación en º.
+            List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y angulo de rotacion en º.
         """
         if not len(self.pieces):
             return []
         img_i = self.img.copy()
         
-        # Ratio de conversión px --> mm
+        # Ratio de conversion px --> mm
         if self.ratio_px2mm == 0.0:
             self.ratio_px2mm = self.get_ratio_px2mm_from_piece(self.pieces[0])
             
