@@ -16,7 +16,7 @@ ALTO_MANO_ROBOT = 140
 LIMITE1 = 100
 LIMITE2 = 540
 
-domino_vision = DominoVision(visualize=False, verbose=False)
+domino_vision = DominoVision(visualize=True, verbose=False)
 
 # Probar con imagenes
 
@@ -24,19 +24,20 @@ path_dir = os.path.abspath("vision/fotos_ur3/")
 
 
 # file = "20230512_174703.jpg"  
-# file = "PIEZAS_TEST2.jpg"
-file = "CADENA4.jpg"
+# file = "PIEZAS_A_ORDENAR2.jpg"
+# file = "CADENA4.jpg"
+file = "PIEZAS_TEST2.jpg"
 filename = os.path.join(path_dir, file)
 # img = cv2.imread(filename)
 # size = img.shape[0]*img.shape[1]
 
 domino_vision.test_with_image(filename)
 
-# print("domino_vision.pieces: ")
-# for pieza in domino_vision.pieces:
-#     print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
+print("domino_vision.pieces: ")
+for pieza in domino_vision.pieces:
+    print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
 
-# Ordena las piezas
+# # Ordena las piezas
 # piezas_ordenadas = domino_vision.ordenar_piezas(domino_vision.pieces)
 
 # print("piezas_ordenadas: ")
@@ -46,10 +47,10 @@ domino_vision.test_with_image(filename)
 # Separa las piezas según sean del robot o del tablero
 piezas_tablero, piezas_robot = domigame.clasificarPiezas(domino_vision.pieces, ALTO_IMG, ALTO_MANO_ROBOT)
 
-# print("piezas_tablero: ")
-# print([pieza.type for pieza in piezas_tablero])
-# print("piezas_robot: ")
-# print([pieza.type for pieza in piezas_robot])
+print("piezas_tablero: ")
+print([pieza.type for pieza in piezas_tablero])
+print("piezas_robot: ")
+print([pieza.type for pieza in piezas_robot])
 
 jugada_logica =  logica(piezas_tablero, piezas_robot)
 print(jugada_logica)

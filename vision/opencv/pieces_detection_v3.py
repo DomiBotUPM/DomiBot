@@ -84,17 +84,17 @@ class PiecesDetector:
             min_area_piece = 7e-3*self.size
         
         if self.verbose: print(f"Tamaño de referencia para detectar pieza: {min_area_piece}")
+        # ########## COMIENZO DE CAMBIOS DE PABLO ##########
         for contour in filtered_contours:
+            area = cv.contourArea(contour)
+            # El tamaño mínimo para un punto
+            if area < 1.6e-4*self.size:
+                continue
             center, (width,height), angle = cv.minAreaRect(contour)
-            ratio = min(width, height)/ max(width,height)
-            area = width*height
+            ratio = width/height
             # Para que sea una pieza el ancho debe ser la mitad que el alto y debe ser al menos de un tamaño concreto
-            no_rectangle = min(width, height) > np.sqrt(min_area_piece/2)
-
-            # ########## COMIENZO DE CAMBIOS DE PABLO ##########
-            # if area > min_area_piece and no_rectangle: # Buscamos que sea al menos un poco alargada
-            if area > min_area_piece: # Buscamos que sea al menos un poco alargada
-                if (ratio > 0.45 and ratio < 0.55): # "horizontal" 
+            if width*height > min_area_piece: 
+                if (ratio > 0.45 and ratio < 0.55):  
                     box = np.int64(cv.boxPoints((center, (width,height), angle)))
                     mask = np.zeros(self.processed_img.shape, np.uint8)
                     cv.fillPoly(mask, [box], color=(255))
@@ -104,19 +104,20 @@ class PiecesDetector:
                         angle = angle + 90
                     pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
                     if self.verbose: print(f"Area del contorno: {area}. Area del rectangulo: {round(width,1)}*{round(height,1)} = {round(width*height,2)}")
-                elif (ratio > 1.9 and ratio < 2.1): # "vertical"
+                elif (ratio > 1.9 and ratio < 2.1): # horizontal o vertical pero con un ángulo lógico
                     box = np.int64(cv.boxPoints((center, (width,height), angle)))
                     mask = np.zeros(self.processed_img.shape, np.uint8)
                     cv.fillPoly(mask, [box], color=(255))
                     pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
                     if self.verbose: print(f"Area del contorno: {area}. Area del rectangulo: {round(width,1)}*{round(height,1)} = {round(width*height,2)}")
-                else: # Pieza grande que añadimos igual -- PABLO
+                else:
                     box = np.int64(cv.boxPoints((center, (width,height), angle)))
                     mask = np.zeros(self.processed_img.shape, np.uint8)
                     cv.fillPoly(mask, [box], color=(255))
                     pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
                     if self.verbose: print(f"Area del contorno: {area}. Area del rectangulo: {round(width,1)}*{round(height,1)} = {round(width*height,2)}")
-            # ########## FINAL DE CAMBIOS DE PABLO ##########         
+
+                # ########## FINAL DE CAMBIOS DE PABLO ##########         
 
                 
         if self.verbose: print(f"Nº de elementos: {len(filtered_contours)}. Nº de candidatos a piezas: {len(pieces)}")
@@ -171,6 +172,8 @@ class PiecesDetector:
         Returns:
             List[Piece]: Lista de piezas detectadas.
         """
+        print("splitear")
+
         if self.verbose: print("-"*5, "Se inicia la separacion de piezas", "-"*5)
         
         masked = cv.bitwise_and(self.processed_img, piece.mask)

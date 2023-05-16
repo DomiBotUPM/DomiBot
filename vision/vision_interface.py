@@ -214,21 +214,21 @@ class DominoVision:
 
         piezas_misma_vertical = []
         
-        for pieza in piezas_ordenadas_dcha_a_izda:
+        for pieza in piezas_ordenadas_dcha_a_izda:   
             if not piezas_misma_vertical:
                 piezas_misma_vertical.append(pieza)
             elif abs(pieza.center[0] - piezas_misma_vertical[0].center[0]) < longitud:
                 piezas_misma_vertical.append(pieza)
             else:
                 # ordenar subgrupos de piezas de misma horizontal, en función de su vertical
-                valor_vertical = [pieza_mv.center[0] for pieza_mv in piezas_misma_vertical]
+                valor_vertical = [pieza_mv.center[1] for pieza_mv in piezas_misma_vertical]
                 ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
                 piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]
                 piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
                 piezas_misma_vertical = [pieza]
 
         # una última vez ordenar en función de su vertical
-        valor_vertical = [pieza_mv.center[0] for pieza_mv in piezas_misma_vertical]
+        valor_vertical = [pieza_mv.center[1] for pieza_mv in piezas_misma_vertical]
         ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
         piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]
         piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
