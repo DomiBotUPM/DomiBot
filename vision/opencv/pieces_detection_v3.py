@@ -116,7 +116,6 @@ class PiecesDetector:
                     cv.fillPoly(mask, [box], color=(255))
                     pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
                     if self.verbose: print(f"Area del contorno: {area}. Area del rectangulo: {round(width,1)}*{round(height,1)} = {round(width*height,2)}")
-                print(area)
             # ########## FINAL DE CAMBIOS DE PABLO ##########         
 
                 
