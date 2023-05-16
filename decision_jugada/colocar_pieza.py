@@ -5,7 +5,7 @@ import numpy as np
 from vision.opencv.piece import Piece
 from .domino_game import numeroComun
 
-def piezasVerticalSeguidas(tablero: Piece, direccion, ancho_pieza):
+def piezasVerticalSeguidas(tablero, direccion, ancho_pieza):
     np = 0
     if direccion == 'arriba':
         tablero.reverse()
@@ -19,7 +19,7 @@ def piezasVerticalSeguidas(tablero: Piece, direccion, ancho_pieza):
             return np
     return np
 
-def proximaDireccionHorizontal(tablero: Piece, direccion):
+def proximaDireccionHorizontal(tablero, direccion):
     if len(tablero) == 1:
         return 'derecha'
     elif direccion == 'abajo':
