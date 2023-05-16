@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 from .preprocessing import preprocessing_img
-from .pieces_detection_v3_ import PiecesDetector
+from .pieces_detection_v3 import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
@@ -14,8 +14,8 @@ class PiecesIdentifier:
 
         Args:
             img (Mat): Imagen
-            size (float): Area de la imagen total en píxeles
-            pieces (List[Piece], optional): Piezas que ya han sido previamente detectadas con algún otro algoritmo. Defaults to [].
+            size (float): Area de la imagen total en pixeles
+            pieces (List[Piece], optional): Piezas que ya han sido previamente detectadas con algun otro algoritmo. Defaults to [].
             preprocess (bool, optional): Realizar preprocesamiento de la imagen. Defaults to True.
             verbose (bool, optional): Mostrar mensajes de seguimiento. Defaults to False.
             visualize (bool, optional): Visualizar imágenes intermedias. Defaults to False.
@@ -62,8 +62,8 @@ class PiecesIdentifier:
         if self.verbose: print(f"Area minima de referencia para descartar ruido: {ref_min}")
         filtered_contours = [contour for contour in orig_contours if cv.contourArea(contour) > ref_min]
         
-        # Diferenciar entre los puntos y la línea separadora
-        # Si no hay contornos internos (salvo el de la propia pieza), entonces la pieza está del revés
+        # Diferenciar entre los puntos y la linea separadora
+        # Si no hay contornos internos (salvo el de la propia pieza), entonces la pieza está del reves
         if len(filtered_contours) <= 1:
             piece.type = "reves"
             if self.verbose: print(f"Pieza de tipo {piece.type}")
@@ -71,7 +71,7 @@ class PiecesIdentifier:
             return piece
         
         dot_contours = []
-        line_contours = [] # En principio solo debería detectar un contorno, pero ponemos varios para mostrar si hay errores
+        line_contours = [] # En principio solo deberia detectar un contorno, pero ponemos varios para mostrar si hay errores
         if self.verbose: print(f"Hay {len(filtered_contours) - 1} contornos internos")
         
         # Medimos el área de la pieza para tenerla como referencia
@@ -93,16 +93,16 @@ class PiecesIdentifier:
                 if ratio > 0.5 and ratio < 2 and inner_area  < 0.05*piece_area:
                     dot_contours.append(box) # punto
                 elif inner_area < 0.07*piece_area:
-                    line_contours.append(box) # línea separadora
+                    line_contours.append(box) # linea separadora
                     
                 if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}")
 
-        # Giramos la pieza para tenerlo en posición horizontal o vertical
+        # Giramos la pieza para tenerlo en posicion horizontal o vertical
         if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
         img_r = imutils.rotate(masked, piece.angle)
         rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = 0.01*piece_area
-        if self.verbose: print(f"Área mínima de referencia: {ref_min}")
+        if self.verbose: print(f"Área minima de referencia: {ref_min}")
         filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
             
         if self.verbose: 
@@ -115,7 +115,7 @@ class PiecesIdentifier:
         piece_area = cv.contourArea(filtered_contours[0])
         if self.verbose: print(f"Area pieza grande: {piece_area}")
         
-        # Obtenemos las posiciones de la línea separadora y de los puntos
+        # Obtenemos las posiciones de la linea separadora y de los puntos
         ref = (0,0)
         dots = []
         for contour in filtered_contours[1:]:
@@ -157,7 +157,7 @@ class PiecesIdentifier:
         cv.imshow("Reconocimiento de piezas", img_i)
     
     def pieces_recognition(self):
-        """Identificacion de piezas utilizando la librería OpenCV
+        """Identificacion de piezas utilizando la libreria OpenCV
 
         Returns:
             List[dict]: Lista de piezas reconocidas.

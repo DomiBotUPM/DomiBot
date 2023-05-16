@@ -2,7 +2,7 @@ import numpy as np
 from typing import List
 
 class Piece:
-    def __init__(self, mask, contour, center, angle, size, type):
+    def __init__(self, mask, contour, center, angle, size, type = ""):
         """Clase que define una pieza de dominó
 
         Args:

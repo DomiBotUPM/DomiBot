@@ -1,5 +1,5 @@
 import os
-from vision.vision_interface_ import DominoVision
+from vision.vision_interface import DominoVision
 import cv2 as cv
 import sys
 
@@ -8,7 +8,7 @@ height_game = 314
 area_game = width_game*height_game
 domino_vision = DominoVision(visualize=True, verbose=True)
 
-# Probar directamente desde la cámara
+# Probar directamente desde la camara
 # domino_vision.test_with_video(channel=0, size_mm=area_game)
 # domino_vision.view_video(channel=0)
 

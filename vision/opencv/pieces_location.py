@@ -6,13 +6,13 @@ PIECE_WIDTH_MM = 19
 PIECE_HEIGHT_MM = 38
 
 def get_ratio_px2mm_from_piece(piece: dict) -> float:
-    """Obtener el ratio de conversión de píxeles a milímetros, a partir de una pieza. 
+    """Obtener el ratio de conversion de pixeles a milimetros, a partir de una pieza. 
 
     Args:
-        piece (dict): Datos de la pieza. Será necesario al menos el ancho en píxeles.
+        piece (dict): Datos de la pieza. Sera necesario al menos el ancho en pixeles.
 
     Returns:
-        float: Ratio de conversión
+        float: Ratio de conversion
     """
     return PIECE_WIDTH_MM / piece['size_px'][0]
 
@@ -20,8 +20,8 @@ def piece_location(piece: dict, ratio_px2mm: float, verbose=False, img=None, vis
     """Localizar la pieza con respecto a la imagen o captura realizada
 
     Args:
-        piece (dict): Datos de pieza. Contendrá al menos el centro y el tamaño en píxeles, así como el ángulo de rotación.
-        ratio_px2mm (float): Ratio de conversión de píxeles a milímetros
+        piece (dict): Datos de pieza. Contendra al menos el centro y el tamano en pixeles, asi como el angulo de rotacion.
+        ratio_px2mm (float): Ratio de conversion de pixeles a milimetros
         verbose (bool, optional): Mostrar mensajes de seguimiento. Defaults to False.
         img (Mat): Imagen para visualizar. Solo es necesario si visualize es True
         visualize (bool, optional): Visualizar imagen resultante. Defaults to False.
@@ -44,13 +44,13 @@ def pieces_location(pieces: List[dict], verbose=False, img=None, visualize=False
     """Localizar la pieza con respecto a la imagen o captura realizada
 
     Args:
-        pieces (List[dict]): Piezas estructuradas como una lista de diccionarios. Será necesario el centro y el tamaño en píxeles, así como el ángulo.
+        pieces (List[dict]): Piezas estructuradas como una lista de diccionarios. Sera necesario el centro y el tamano en pixeles, asi como el angulo.
         verbose (bool, optional): Mostrar mensajes de seguimiento. Defaults to False.
         img (Mat): Imagen para visualizar. Solo es necesario si visualize es True
         visualize (bool, optional): Visualizar imagen resultante. Defaults to False.
 
     Returns:
-        List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y ángulo de rotación en º.
+        List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y angulo de rotacion en º.
     """
     if img is not None:
         img_i = img.copy()

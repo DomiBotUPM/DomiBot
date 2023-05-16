@@ -1,12 +1,12 @@
 import cv2 as cv
 
 def preprocessing_img(img, open_size=(1,1), visualize=False):
-    """Preprocesamiento de la imagen, aplicando filtros y operaciones morfológicas
+    """Preprocesamiento de la imagen, aplicando filtros y operaciones morfologicas
 
     Args:
         img (Mat): Imagen
-        open (int): Definir el tamaño del kernel para realizar la operación de apertura
-        visualize (bool, optional): Definir si se quiere visualizar o no las imágenes resultantes. Defaults to False.
+        open (int): Definir el tamano del kernel para realizar la operacion de apertura
+        visualize (bool, optional): Definir si se quiere visualizar o no las imagenes resultantes. Defaults to False.
 
     Returns:
         processed_img: Imagen procesada.

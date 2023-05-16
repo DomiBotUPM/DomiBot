@@ -47,7 +47,7 @@ def numeroDiferenteExtremo(pieza_extremo, pieza_interior):
 def extremosTablero(tablero):
     if len(tablero) == 0:
         return []
-    elif len(tablero) == 1: # en teoría siempre debería ser doble pero bueeeno
+    elif len(tablero) == 1: # en teoria siempre deberia ser doble pero bueeeno
         if tablero[0].esDoble():
             return [tablero[0].type[0], tablero[0].type[0]]
         else:
@@ -129,7 +129,7 @@ def tableroVirtual(piezas, umbral_dist, orden):
                 break
 
     # comprobar siempre rama superior o inferior
-    if tablero[0].center[1] < tablero[-1].center[1] - umbral_dist / 2: # el 10 este está por ejemplo
+    if tablero[0].center[1] < tablero[-1].center[1] - umbral_dist / 2: # el 10 este esta por ejemplo
         tablero.reverse() 
     elif tablero[0].center[1] < tablero[-1].center[1] + umbral_dist / 2:
         if tablero[0].center[0] < tablero[-1].center[0]:
@@ -138,7 +138,7 @@ def tableroVirtual(piezas, umbral_dist, orden):
     return tablero
 
 
-def decidirMovimiento(tablero, piezas_robot): # aquí viene toda la IA :)
+def decidirMovimiento(tablero, piezas_robot): # aqui viene toda la IA :)
     posibles_jugadas1, posibles_jugadas2 = jugadasDisponibles(tablero, piezas_robot)
 
     if len(posibles_jugadas1): # hay jugadas posibles para la primera ficha del tablero
@@ -158,7 +158,7 @@ def decidirMovimiento(tablero, piezas_robot): # aquí viene toda la IA :)
         else:
             return {'movimiento': 'jugada', 'pieza_tablero': tablero[0], 'pieza_robot': posibles_jugadas1[ind_orden1[-1]], 'direccion': 'abajo'}
         
-    elif len(posibles_jugadas2): # hay jugadas posibles para la última ficha del tablero pero no para la primera
+    elif len(posibles_jugadas2): # hay jugadas posibles para la ultima ficha del tablero pero no para la primera
         #para elegir ficha de mayor valor
         suma_valores2 = [pieza.sumaValor() for pieza in posibles_jugadas2]
         ind_orden2 = sorted(range(len(suma_valores2)), key=lambda k: suma_valores2[k]) # stack overflow

@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 from .preprocessing import preprocessing_img
-from .pieces_detection_v2_ import PiecesDetector
+from .pieces_detection_v2 import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
