@@ -18,7 +18,7 @@ class PiecesIdentifier:
             pieces (List[Piece], optional): Piezas que ya han sido previamente detectadas con algun otro algoritmo. Defaults to [].
             preprocess (bool, optional): Realizar preprocesamiento de la imagen. Defaults to True.
             verbose (bool, optional): Mostrar mensajes de seguimiento. Defaults to False.
-            visualize (bool, optional): Visualizar imágenes intermedias. Defaults to False.
+            visualize (bool, optional): Visualizar imagenes intermedias. Defaults to False.
         """
         self.img = img
         self.size = size
@@ -39,7 +39,7 @@ class PiecesIdentifier:
             return img
     
     def __piece_recognition(self, piece, img, copy_img=True):
-        """Reconocimiento de pieza que ha sido aislada a partir de una máscara
+        """Reconocimiento de pieza que ha sido aislada a partir de una mascara
 
         Args:
             piece: Pieza a reconocer
@@ -57,13 +57,13 @@ class PiecesIdentifier:
         masked = cv.bitwise_and(self.processed_img, piece.mask)
         
         # Contornos internos a la pieza
-        orig_contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, orig_contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = round(6e-5*self.processed_img.size,2)
         if self.verbose: print("Area minima de referencia para descartar ruido:", ref_min)
         filtered_contours = [contour for contour in orig_contours if cv.contourArea(contour) > ref_min]
         
         # Diferenciar entre los puntos y la linea separadora
-        # Si no hay contornos internos (salvo el de la propia pieza), entonces la pieza está del reves
+        # Si no hay contornos internos (salvo el de la propia pieza), entonces la pieza esta del reves
         if len(filtered_contours) <= 1:
             piece.type = "reves"
             if self.verbose: print("Pieza de tipo", piece.type)
@@ -74,7 +74,7 @@ class PiecesIdentifier:
         line_contours = [] # En principio solo deberia detectar un contorno, pero ponemos varios para mostrar si hay errores
         if self.verbose: print("Hay", len(filtered_contours) - 1, " contornos internos")
         
-        # Medimos el área de la pieza para tenerla como referencia
+        # Medimos el area de la pieza para tenerla como referencia
         piece_area = cv.contourArea(filtered_contours[0])
         if self.verbose: print("Area pieza grande:", piece_area)
         
@@ -100,13 +100,13 @@ class PiecesIdentifier:
         # Giramos la pieza para tenerlo en posicion horizontal o vertical
         if self.verbose: print("Se hace giro de", round(piece.angle, 2))
         img_r = imutils.rotate(masked, piece.angle)
-        rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = 0.01*piece_area
-        if self.verbose: print("Área minima de referencia:", ref_min)
+        if self.verbose: print("Area minima de referencia:", ref_min)
         filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
             
         if self.verbose: 
-            # Comprobamos si está en vertical u horizontal -> ahora mismo nos
+            # Comprobamos si esta en vertical u horizontal -> ahora mismo nos
             (x,y,w,h) = cv.boundingRect(filtered_contours[0])
             is_vertical = h/w > 1
             print("Pieza vertical:", is_vertical)

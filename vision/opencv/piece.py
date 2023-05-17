@@ -3,39 +3,39 @@ from typing import List
 
 class Piece:
     def __init__(self, mask, contour, center, angle, size, type = ""):
-        """Clase que define una pieza de dominó
+        """Clase que define una pieza de domino
 
         Args:
-            mask (np.ndarray): Máscara que contiene. Puede utilizarse para identificación
+            mask (np.ndarray): Mascara que contiene. Puede utilizarse para identificacion
             contour (np.ndarray): Contorno de la ficha
             center (tuple): Centro de la pieza
-            angle (float): Ángulo de rotación
-            size (tuple): Tamaño
-            type (str, optional): Tipo de pieza. Defaults to "" (cuando aún no se ha identificado la pieza).
+            angle (float): Angulo de rotacion
+            size (tuple): Tamano
+            type (str, optional): Tipo de pieza. Defaults to "" (cuando aun no se ha identificado la pieza).
         """
         self.mask = mask
         self.contour = contour
         self.center = center
         self.angle = angle
         self.size = size
-        # Medidas en milímetros
+        # Medidas en milimetros
         self.center_mm = 0.0
         self.size_mm = 0.0
-        # Identificación
+        # Identificacion
         self.type = type
-        self.dots: List[int] = []
+        self.dots = []
         
     def __dir__(self):
         print("Angulo:", self.angle, ", size:", self.size, ", type:", self.type, ", center:", self.center)
 
-    def get_area(self, area_px=True) -> float:
-        """Obtener el área de la pieza, ya sea en píxeles o en milímetros
+    def get_area(self, area_px=True):
+        """Obtener el area de la pieza, ya sea en pixeles o en milimetros
 
         Args:
-            area_px (bool, optional): True: área en píxeles. False: área en milímetros. Defaults to True.
+            area_px (bool, optional): True: area en pixeles. False: area en milimetros. Defaults to True.
 
         Returns:
-            float: Área de la pieza
+            float: Area de la pieza
         """
         if area_px:
             return self.size[0]*self.size[1]
@@ -43,7 +43,7 @@ class Piece:
             return self.size_mm[0]*self.size_mm[1]
         
     def __eq__(self, piece):
-        """Comparación con otra pieza. Para que sea la misma deben tener una rotación y un centro similar, además de ser del mismo tipo.
+        """Comparacion con otra pieza. Para que sea la misma deben tener una rotacion y un centro similar, ademas de ser del mismo tipo.
 
         Args:
             piece (Piece): _description_
@@ -82,9 +82,9 @@ class Piece:
     def sumaValor(self):
         return int(self.type[0]) + int(self.type[2])
     
-    def __ne__(self, piece) -> bool:
+    def __ne__(self, piece):
         return not self.__eq__(piece)
         
     def __str__(self):
-        return "Pice - angle:", round(self.angle, 2), ", size:", np.round(self.size, 1), ", type:", self.type, ", center:", np.round(self.center,1)
+        return "Piece - angle:", round(self.angle, 2), ", size:", np.round(self.size, 1), ", type:", self.type, ", center:", np.round(self.center,1)
 

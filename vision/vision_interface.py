@@ -134,7 +134,7 @@ class DominoVision:
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-    def test_with_video(self, channel=1, size_mm=0.0) -> None:
+    def test_with_video(self, channel=1, size_mm=0.0):
         """Test rapido en tiempo real. Se realizan tanto detecciones como reconocimientos ciclicamente.
 
         Args:

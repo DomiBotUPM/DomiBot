@@ -22,7 +22,7 @@ class PiecesDetector:
         self.preprocess = preprocess
         self.verbose = verbose
         self.visualize = visualize
-        self.pieces: List[Piece] = []
+        self.pieces = []
         self.PIECE_WIDTH_MM = 19
         self.PIECE_HEIGHT_MM = 38
         
@@ -68,7 +68,7 @@ class PiecesDetector:
         img_i = self.img.copy()
         
         # Detectar contornos
-        contours, _ = cv.findContours(self.processed_img, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, contours, _ = cv.findContours(self.processed_img, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Minima area para un punto
         
         # Si no hay ningun contorno minimamente grande, se finaliza la deteccion
@@ -77,7 +77,7 @@ class PiecesDetector:
             return []
         
         # Encontrar solo los contornos que sean de piezas
-        pieces: List[Piece] = []
+        pieces = []
         if self.ref_piece_area > 0:
             min_area_piece = 0.8*self.ref_piece_area
         else:
@@ -120,7 +120,7 @@ class PiecesDetector:
                 # ########## FINAL DE CAMBIOS DE PABLO ##########         
 
                 
-        if self.verbose: print("Nº de elementos:", len(filtered_contours), ". Nº de candidatos a piezas:", len(pieces))
+        if self.verbose: print("NO de elementos:", len(filtered_contours), ". NO de candidatos a piezas:", len(pieces))
         
         # Si no se ha encontrado ningun candidato a pieza, se finaliza la deteccion
         if len(pieces) == 0:
@@ -158,7 +158,7 @@ class PiecesDetector:
                     if self.visualize:
                         cv.drawContours(img_i,[piece.contour],0,(0,255,0), thickness=2)
         
-            if self.verbose:  print("Nº de elementos:", len(contours), ". Nº de piezas detectadas:", len(pieces))
+            if self.verbose:  print("NO de elementos:", len(contours), ". NO de piezas detectadas:", len(pieces))
         if self.visualize: cv.imshow("Deteccion de piezas", img_i)
         
         self.pieces = pieces
@@ -178,7 +178,7 @@ class PiecesDetector:
         
         masked = cv.bitwise_and(self.processed_img, piece.mask)
         # Detectar contornos
-        contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Minima area para un punto
         # Encontrar solo las lineas separadoras de las piezas
         pieces = []
@@ -220,7 +220,7 @@ class PiecesDetector:
                 pieces.append(Piece(new_mask, box_piece, np.round(center,3), true_angle, size=(round(new_width,3), round(new_height,3))))
                 if self.verbose: print("Nueva pieza encontrada. Area de la linea separadora:", area, ". Area de la pieza:", round(new_width,1), "*", round(new_height,1), " =", round(new_width*new_height,2))
             # ########## FIN DE CAMBIOS DE PABLO ##########
-        if self.verbose: print("Nº de elementos:", len(filtered_contours), ". Nº de piezas detectadas:", len(pieces))
+        if self.verbose: print("NO de elementos:", len(filtered_contours), ". NO de piezas detectadas:", len(pieces))
         # if self.visualize: cv.imshow("Separacion de piezas en el juego", img_i)
         
         if self.verbose: print("-"*5, "Se finaliza la separacion de piezas", "-"*5)
@@ -262,7 +262,7 @@ class PiecesDetector:
         """Localizar la pieza con respecto a la imagen o captura realizada
         
         Returns:
-            List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y angulo de rotacion en º.
+            List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y angulo de rotacion en O.
         """
         if not len(self.pieces):
             return []
