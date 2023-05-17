@@ -26,7 +26,7 @@ class Piece:
         self.dots: List[int] = []
         
     def __dir__(self):
-        print(f"Angulo: {self.angle}, size: {self.size}, type: {self.type}, center: {self.center}")
+        print("Angulo:", self.angle, ", size:", self.size, ", type:", self.type, ", center:", self.center)
 
     def get_area(self, area_px=True) -> float:
         """Obtener el área de la pieza, ya sea en píxeles o en milímetros
@@ -86,5 +86,5 @@ class Piece:
         return not self.__eq__(piece)
         
     def __str__(self):
-        return f"Pice - angle: {round(self.angle, 2)}, size: {np.round(self.size, 1)}, type: {self.type}, center: {np.round(self.center,1)}"
+        return "Pice - angle:", round(self.angle, 2), ", size:", np.round(self.size, 1), ", type:", self.type, ", center:", np.round(self.center,1)
 

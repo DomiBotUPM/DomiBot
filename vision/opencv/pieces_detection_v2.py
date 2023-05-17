@@ -73,7 +73,7 @@ class PiecesDetector:
         
         # Si no hay ningun contorno minimamente grande, se finaliza la deteccion
         if len(filtered_contours) == 0:
-            if self.verbose: print(f"No se ha detectado ningun contorno minimamente grande")
+            if self.verbose: print("No se ha detectado ningun contorno minimamente grande")
             return []
         
         # Encontrar solo los contornos que sean de piezas
@@ -83,7 +83,7 @@ class PiecesDetector:
         else:
             min_area_piece = 7e-3*self.size
         
-        if self.verbose: print(f"Tamano de referencia para detectar pieza: {min_area_piece}")
+        if self.verbose: print("Tamano de referencia para detectar pieza:", min_area_piece)
         for contour in filtered_contours:
             center, (width,height), angle = cv.minAreaRect(contour)
             ratio = min(width, height)/ max(width,height)
@@ -95,9 +95,9 @@ class PiecesDetector:
                 mask = np.zeros(self.processed_img.shape, np.uint8)
                 cv.fillPoly(mask, [box], color=(255))
                 pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
-                if self.verbose: print(f"Area del contorno rectangular: {round(width,1)}*{round(height,1)} = {round(width*height,2)}")
+                if self.verbose: print("Area del contorno rectangular:", round(width,1), "*", round(height,1), " =", round(width*height,2))
                 
-        if self.verbose: print(f"Nº de elementos: {len(filtered_contours)}. Nº de candidatos a piezas: {len(pieces)}")
+        if self.verbose: print("Nº de elementos:", len(filtered_contours), ". Nº de candidatos a piezas:", len(pieces))
         
         # Si no se ha encontrado ningun candidato a pieza, se finaliza la deteccion
         if len(pieces) == 0:
@@ -111,7 +111,7 @@ class PiecesDetector:
         else:
             ref_area = round(np.mean([piece.get_area() for piece in pieces]),2)
         
-        if self.verbose: print(f"Referencia para detectar piezas anomalas: {ref_area}")
+        if self.verbose: print("Referencia para detectar piezas anomalas:", ref_area)
         
         pieces_big = [p for p in pieces if p.get_area() >= 1.5*ref_area]
         pieces = [p for p in pieces if p.get_area() < 1.5*ref_area]
@@ -124,11 +124,11 @@ class PiecesDetector:
         if len(pieces_big):
             if self.ratio_px2mm == 0.0:
                 self.ratio_px2mm = self.get_ratio_px2mm_from_piece(pieces[0])
-                if self.verbose: print(f"Pieza utilizada como referencia para ratio. Ancho: {min(pieces[0].size[0], pieces[0].size[1])}. Ratio: {round(self.ratio_px2mm, 2)}")
+                if self.verbose: print("Pieza utilizada como referencia para ratio. Ancho:", min(pieces[0].size[0], pieces[0].size[1]), ". Ratio:", round(self.ratio_px2mm, 2))
             for i, piece in enumerate(pieces_big):
                 if self.verbose: 
-                    print(f"Indice de pieza actual: {i}")
-                    print(f"Se ha encontrado una pieza anomala de tamano: {piece.get_area()}. Tamano de pieza de referencia: {ref_area}.")
+                    print("Indice de pieza actual:", i)
+                    print("Se ha encontrado una pieza anomala de tamano:", piece.get_area(), ". Tamano de pieza de referencia:", ref_area, ".")
                 
                 # Se separa la "pieza" detectada como una sola, en las verdaderas que habia
                 split_pieces = self.split_piece(piece)
@@ -137,7 +137,7 @@ class PiecesDetector:
                     if self.visualize:
                         cv.drawContours(img_i,[piece.contour],0,(0,255,0), thickness=2)
         
-            if self.verbose:  print(f"Nº de elementos: {len(contours)}. Nº de piezas detectadas: {len(pieces)}")
+            if self.verbose:  print("Nº de elementos:", len(contours), ". Nº de piezas detectadas:", len(pieces))
         if self.visualize: cv.imshow("Deteccion de piezas", img_i)
         
         self.pieces = pieces
@@ -166,7 +166,7 @@ class PiecesDetector:
             
             # Condicion de tamano de la linea separadora si tenemos la referencia del tamano de pieza
             if self.ref_piece_area > 0:
-                print(f"Size: {round(width,1)}x{round(height,1)}={round(width*height,2)}")
+                print("Size:", round(width,1), "x", round(height,1), "=", round(width*height,2))
                 cond_size = max(width, height) > 0.5*(self.ratio_px2mm*self.PIECE_WIDTH_MM) and width*height < 0.25*self.ref_piece_area
             else: # Si no tenemos la referencia
                 cond_size = width*height < 1e-2*self.size
@@ -177,7 +177,7 @@ class PiecesDetector:
                 mask = np.zeros(self.processed_img.shape, np.uint8)
                 cv.fillPoly(mask, [box], color=(255))
                 
-                if self.verbose: print(f"Encontrada linea separadora de {round(width,2)}x{round(height,2)}={round(width*height,2)}")
+                if self.verbose: print("Encontrada linea separadora de", round(width,2), "x", round(height,2), "=", round(width*height,2))
                 # Con ayuda del ratio, se obtiene el contorno de la pieza
                 if width > height: # Horizontal
                     new_width = 19/self.ratio_px2mm
@@ -190,9 +190,9 @@ class PiecesDetector:
                 new_mask = np.zeros(self.processed_img.shape, np.uint8)
                 cv.fillPoly(new_mask, [box_piece], color=(255))
                 pieces.append(Piece(new_mask, box_piece, np.round(center,3), angle, size=(round(new_width,3), round(new_height,3))))
-                if self.verbose: print(f"Nueva pieza encontrada. Area de la linea separadora: {area}. Area de la pieza: {round(new_width,1)}*{round(new_height,1)} = {round(new_width*new_height,2)}")
+                if self.verbose: print("Nueva pieza encontrada. Area de la linea separadora:", area, ". Area de la pieza:", round(new_width,1), "*", round(new_height,1), " =", round(new_width*new_height,2))
         
-        if self.verbose: print(f"Nº de elementos: {len(filtered_contours)}. Nº de piezas detectadas: {len(pieces)}")
+        if self.verbose: print("Nº de elementos:", len(filtered_contours), ". Nº de piezas detectadas:", len(pieces))
         # if self.visualize: cv.imshow("Separacion de piezas en el juego", img_i)
         
         if self.verbose: print("-"*5, "Se finaliza la separacion de piezas", "-"*5)
@@ -225,7 +225,7 @@ class PiecesDetector:
             cx = round(piece.center[0])
             cy = round(piece.center[1])
             cv.rectangle(img_i, (cx-34, cy-6), (cx+34, cy+6), (255,255,255), thickness=-1)
-            cv.putText(img_i, f"({round(center[0],1)}, {round(center[1],1)})", (cx-33, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
+            cv.putText(img_i, "(" + str(round(center[0],1)) + "," + str(round(center[1],1)) + ")", (cx-33, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
             cv.imshow("Localizacion de piezas", img_i)
         
         return center, (width, height), piece.angle

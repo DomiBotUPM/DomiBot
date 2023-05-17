@@ -44,10 +44,10 @@ x_px = recognitions[0].center_mm[0]
 y_px = recognitions[0].center_mm[1]
 theta_px = recognitions[0].angle
 
-aaa = colopieza.conversion_coordenadas_juego(x_px, y_px, theta_px)
-print(aaa)
-
-
+# aaa = colopieza.conversion_coordenadas_juego(x_px, y_px, theta_px)
+# print(aaa)
+b = 55
+print("aaaa", b)
 
 
 # # Ordena las piezas

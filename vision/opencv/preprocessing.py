@@ -21,7 +21,7 @@ def preprocessing_img(img, open_size=(1,1), visualize=False):
     
     if visualize:
         cv.imshow("Escala de grises", gray)
-        cv.imshow(f"Imagen binarizada con umbral: {thresh}", binarized)
-        cv.imshow(f"Imagen binarizada tras apertura de {open}", morph_img)
+        cv.imshow("Imagen binarizada con umbral:", thresh, binarized)
+        cv.imshow("Imagen binarizada tras apertura de", open, morph_img)
     
     return morph_img

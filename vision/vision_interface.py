@@ -80,8 +80,8 @@ class DominoVision:
         is_change = len(not_coincidences) > 0
         if self.verbose:
             if is_change:
-                print(f"Se ha producido un cambio en las piezas del juego. Habian {len(self.pieces_old)} fichas y ahora hay {len(self.pieces)}.")
-                print(f"{len(not_coincidences)} piezas no coinciden")
+                print("Se ha producido un cambio en las piezas del juego. Habian", len(self.pieces_old), " fichas y ahora hay", len(self.pieces), ".")
+                print("", len(not_coincidences), " piezas no coinciden")
             else:
                 print("Las piezas son las mismas")
 
@@ -124,9 +124,9 @@ class DominoVision:
         detections = self.pieces_detection(img, size)
         recognitions = self.pieces_recognition(img, size, pieces=detections)
         if len(recognitions):
-            print(f"Se han reconocido {len(recognitions)} piezas")
+            print("Se han reconocido", len(recognitions), " piezas")
         else:
-            print(f"No se ha podido reconocer ninguna pieza")
+            print("No se ha podido reconocer ninguna pieza")
         
         if self.detect_new_turn():
             print("Nuevo turno!")
@@ -156,9 +156,9 @@ class DominoVision:
             recognitions = self.pieces_recognition(frame, size, pieces=detections)
             if self.verbose or True:
                 if len(recognitions):
-                    print(f"Se han reconocido {len(recognitions)} piezas")
+                    print("Se han reconocido", len(recognitions), " piezas")
                 else:
-                    print(f"No se ha podido reconocer ninguna pieza")
+                    print("No se ha podido reconocer ninguna pieza")
             
             # if self.detect_new_turn():
             #     print("Nuevo turno!")

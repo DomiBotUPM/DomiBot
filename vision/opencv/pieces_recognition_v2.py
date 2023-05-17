@@ -59,24 +59,24 @@ class PiecesIdentifier:
         # Contornos internos a la pieza
         orig_contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = round(6e-5*self.processed_img.size,2)
-        if self.verbose: print(f"Area minima de referencia para descartar ruido: {ref_min}")
+        if self.verbose: print("Area minima de referencia para descartar ruido:", ref_min)
         filtered_contours = [contour for contour in orig_contours if cv.contourArea(contour) > ref_min]
         
         # Diferenciar entre los puntos y la linea separadora
         # Si no hay contornos internos (salvo el de la propia pieza), entonces la pieza esta del reves
         if len(filtered_contours) <= 1:
             piece.type = "reves"
-            if self.verbose: print(f"Pieza de tipo {piece.type}")
+            if self.verbose: print("Pieza de tipo", piece.type)
             if self.visualize: self.__visualize_piece_contours(img_i, piece)
             return piece
         
         dot_contours = []
         line_contours = [] # En principio solo deberia detectar un contorno, pero ponemos varios para mostrar si hay errores
-        if self.verbose: print(f"Hay {len(filtered_contours) - 1} contornos internos")
+        if self.verbose: print("Hay", len(filtered_contours) - 1, " contornos internos")
         
         # Medimos el area de la pieza para tenerla como referencia
         piece_area = cv.contourArea(filtered_contours[0])
-        if self.verbose: print(f"Area pieza grande: {piece_area}")
+        if self.verbose: print("Area pieza grande:", piece_area)
         
         if self.visualize:
             # Miramos los contornos internos a la pieza para obtener sus contornos circulares o rectangulares
@@ -95,17 +95,17 @@ class PiecesIdentifier:
                 elif inner_area < 0.1*piece_area:
                     line_contours.append(box) # linea separadora
                     
-                if self.verbose: print(f"Area interna: {round(inner_area,2)}. Ratio: {round(ratio,2)}. Centro: {np.round(center_i,2)}.")
+                if self.verbose: print("Area interna:", round(inner_area,2), ". Ratio:", round(ratio,2), ". Centro:", np.round(center_i,2), ".")
 
         # Giramos la pieza para tenerlo en posicion horizontal o vertical
         cond_angle = piece.angle < 0.95*90 or piece.angle > 1.05*piece.angle
         cond_angle = cond_angle and abs(piece.angle) > 5
         if cond_angle:
-            if self.verbose: print(f"Se hace giro de {round(piece.angle, 2)}")
+            if self.verbose: print("Se hace giro de", round(piece.angle, 2))
             img_r = imutils.rotate(masked, piece.angle)
             rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
             ref_min = 0.005*piece_area
-            if self.verbose: print(f"Area minima de referencia: {ref_min}")
+            if self.verbose: print("Area minima de referencia:", ref_min)
             filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
         
         if len(filtered_contours) == 0:
@@ -121,11 +121,11 @@ class PiecesIdentifier:
             index_pos = 1
             
         if self.verbose: 
-            print(f"Pieza vertical: {is_vertical}")
-            print(f"Hay {len(filtered_contours) - 1} contornos internos")
+            print("Pieza vertical:", is_vertical)
+            print("Hay", len(filtered_contours) - 1, " contornos internos")
         
         piece_area = cv.contourArea(filtered_contours[0])
-        if self.verbose: print(f"Area pieza grande: {piece_area}")
+        if self.verbose: print("Area pieza grande:", piece_area)
         
         # Obtenemos las posiciones de la linea separadora y de los puntos
         ref = (0,0)
@@ -137,20 +137,20 @@ class PiecesIdentifier:
                 ref = (x,y)
             else:
                 dots.append((x,y))
-            if self.verbose: print(f"Area interna: {cv.contourArea(contour)}. Ratio: {round(ratio,2)}. Centro: {x,y}")
+            if self.verbose: print("Area interna:", cv.contourArea(contour), ". Ratio:", round(ratio,2), ". Centro:", x,y)
         # Separamos los puntos en dos grupos
         n_dots_up = len([dot for dot in dots if dot[index_pos] < ref[index_pos]])
         n_dots_down = len([dot for dot in dots if dot[index_pos] > ref[index_pos]])
-        if self.verbose: print(f"Hay {len(dots)} puntos. Arriba/Izquierda: {n_dots_up}. Abajo/Derecha: {n_dots_down}")
+        if self.verbose: print("Hay", len(dots), " puntos. Arriba/Izquierda:", n_dots_up, ". Abajo/Derecha:", n_dots_down)
         
         piece.dots = [n_dots_up, n_dots_down]
         # El primer valor siempre debe ser mayor igual que el segundo
-        piece.type = f"{max(n_dots_up,n_dots_down)}x{min(n_dots_up,n_dots_down)}"
+        piece.type = str(max(n_dots_up,n_dots_down)) + "x" + str(min(n_dots_up,n_dots_down))
         
         # if piece.type == "9x0":
         #     cv.imshow("Caso 9x0", img_r)
         
-        if self.verbose: print(f"Pieza de tipo {piece.type}")
+        if self.verbose: print("Pieza de tipo", piece.type)
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
         return piece
     
