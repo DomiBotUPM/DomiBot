@@ -1,11 +1,11 @@
 class PiezaSencilla:
-    def __init__(self, center= [0, 0], angle=0, v1=-1, v2=-1):
+    def __init__(self, x = 0, y = 0, angle=0, v1=-1, v2=-1):
         """Clase que define una pieza de domino mas sencilla, con menos cosas
 
         Args:
             ...
         """
-        self.center = center
+        self.center = [x, y]
         self.angle = angle
         self.v1 = v1
         self.v2 = v2
@@ -32,4 +32,14 @@ class PiezaSencilla:
         return self.v1 + self.v2
     
 
-def convertir
+def convertirArray3(array):
+    piezas = []
+    for i in range(len(array / 3)):
+        piezas.append(PiezaSencilla(array[3*i + 0], array[3*i + 1], array[3*i + 2]))
+    return piezas
+
+def convertirArray5(array):
+    piezas = []
+    for i in range(len(array / 5)):
+        piezas.append(PiezaSencilla(array[5*i + 0], array[5*i + 1], array[5*i + 2], array[5*i + 3], array[5*i + 4]))
+    return piezas

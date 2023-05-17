@@ -30,6 +30,8 @@ valores_piezas = []
 
 for pieza in recognitions:
     posicion_pieza = conversionCoordenadasJuego(pieza.center_mm[0], pieza.center_mm[1], pieza.angle)
+    posicion_pieza[0] /= 1000 # paso a mm
+    posicion_pieza[1] /= 1000 # paso a mm
     valores_piezas.extend(posicion_pieza)
 
 

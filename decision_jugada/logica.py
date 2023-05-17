@@ -15,8 +15,10 @@ from .pieza_sencilla import PiezaSencilla
 
 def logica(piezas_tablero, piezas_robot):
     ORDEN_NORMA = 2
-    LONGITUD_PIEZA  = max(piezas_tablero[0].size)
-    ANCHURA_PIEZA   = min(piezas_tablero[0].size) 
+    # LONGITUD_PIEZA  = max(piezas_tablero[0].size) # en mm
+    # ANCHURA_PIEZA   = min(piezas_tablero[0].size) # en mm  
+    LONGITUD_PIEZA  = 38 # en mm
+    ANCHURA_PIEZA   = 19 # en mm
     UMBRAL_DIST     = LONGITUD_PIEZA * 1.5
     # limites para no colocar en los extremos
     LIMITE1 = 100
