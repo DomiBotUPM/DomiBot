@@ -1,10 +1,14 @@
 import os
+import cv2
+
+from vision.vision_interface import DominoVision
+from vision.conversion_coordenadas import conversionCoordenadasJuego
+
 import decision_jugada.domino_game as domigame
 import decision_jugada.colocar_pieza as colopieza
 from decision_jugada.logica import logica
-from vision.vision_interface import DominoVision
-import cv2
-from vision.conversion_coordenadas import conversionCoordenadasJuego
+from decision_jugada.pieza_sencilla import PiezaSencilla
+from decision_jugada.pieza_sencilla import convertirArray5 as convertirArray
 
 # esto son constantes que me he inventado
 ORDEN_NORMA = 2
@@ -13,7 +17,7 @@ ANCHURA_PIEZA   = 40
 UMBRAL_DIST     = LONGITUD_PIEZA * 1.5
 ALTO_IMG        = 480
 ANCHO_IMG       = 640
-ALTO_MANO_ROBOT = 140
+ALTO_MANO_ROBOT = 140 
 LIMITE1 = 100
 LIMITE2 = 540
 
@@ -40,14 +44,6 @@ print("recognitions")
 for pieza in recognitions:
     print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
 
-# conversión de coordenadas
-# x_px = recognitions[0].center_mm[0]
-# y_px = recognitions[0].center_mm[1]
-# theta_px = recognitions[0].angle
-
-# coord = conversionCoordenadasJuego(x_px, y_px, theta_px)
-# print(coord)
-
 # # Ordena las piezas
 # piezas_ordenadas = domino_vision.ordenar_piezas(domino_vision.pieces)
 
@@ -55,24 +51,47 @@ for pieza in recognitions:
 # for pieza in piezas_ordenadas:
 #     print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
 
+
+
+
+
+valores_piezas = []
+
+# valores reales
+# for pieza in recognitions:
+#     posicion_pieza = conversionCoordenadasJuego(pieza.center_mm[0], pieza.center_mm[1], pieza.angle)
+#     posicion_pieza[0] /= 1000 # paso a mm
+#     posicion_pieza[1] /= 1000 # paso a mm
+#     valores_piezas.extend(posicion_pieza)
+#     valores_piezas.extend([pieza.dots[0], pieza.dots[1]])
+
+# en pixeles
+for pieza in recognitions:
+    valores_piezas.extend([pieza.center[0], pieza.center[1], pieza.angle])
+    valores_piezas.extend([pieza.dots[0], pieza.dots[1]])
+
+piezas_sencillas = convertirArray(valores_piezas)
+
+print("Piezas sencillas")
+for pieza in piezas_sencillas:
+    print([[pieza.v1, pieza.v2], pieza.center, pieza.angle])
+
 # Separa las piezas segun sean del robot o del tablero
-piezas_tablero, piezas_robot = domigame.clasificarPiezas(recognitions, ALTO_IMG, ALTO_MANO_ROBOT)
+piezas_tablero, piezas_robot = domigame.clasificarPiezas(piezas_sencillas, ALTO_IMG, ALTO_MANO_ROBOT)
 
 print("piezas_tablero: ")
-print([pieza.type for pieza in piezas_tablero])
+print([[pieza.v1, pieza.v2] for pieza in piezas_tablero])
 print("piezas_robot: ")
-print([pieza.type for pieza in piezas_robot])
+print([[pieza.v1, pieza.v2] for pieza in piezas_robot])
 
 jugada_logica =  logica(piezas_tablero, piezas_robot)
 print(jugada_logica)
-# print(origen0, origen1, angulo_origen, destino0, destino1, angulo_destino)
 
-# origen0, origen1, angulo_origen, destino0, destino1, angulo_destino = jugada_logica
+origen0, origen1, angulo_origen, destino0, destino1, angulo_destino = jugada_logica
 
-# img = cv2.imread(filename)
-# img = cv2.circle(img, (int(origen0),int(origen1)), radius=20, color=(0, 0, 255), thickness=3)
-# img = cv2.circle(img, (int(destino0),int(destino1)), radius=20, color=(255, 255, 0), thickness=3)
-# cv2.imshow("Imagen real", img)
-
+img = cv2.imread(filename)
+img = cv2.circle(img, (int(origen0),int(origen1)), radius=20, color=(0, 0, 255), thickness=3)
+img = cv2.circle(img, (int(destino0),int(destino1)), radius=20, color=(255, 255, 0), thickness=3)
+cv2.imshow("Movimiento", img)
 
 cv2.waitKey(0)

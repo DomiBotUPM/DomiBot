@@ -34,12 +34,12 @@ class PiezaSencilla:
 
 def convertirArray3(array):
     piezas = []
-    for i in range(len(array / 3)):
+    for i in range(int(len(array)/3)):
         piezas.append(PiezaSencilla(array[3*i + 0], array[3*i + 1], array[3*i + 2]))
     return piezas
 
 def convertirArray5(array):
     piezas = []
-    for i in range(len(array / 5)):
+    for i in range(int(len(array)/5)):
         piezas.append(PiezaSencilla(array[5*i + 0], array[5*i + 1], array[5*i + 2], array[5*i + 3], array[5*i + 4]))
     return piezas
