@@ -1,9 +1,9 @@
-import sys
-sys.path.append("..\vision")
+# import sys
+# sys.path.append("..\vision")
 
 from .colocar_pieza import colocarPieza
 from .domino_game import tableroVirtual, decidirMovimiento
-from vision.opencv.piece import Piece
+from .pieza_sencilla import PiezaSencilla
 
 # LEER, IMPORTANTE
 # No se si funciona esto porque esta hecho muy a huevo y no he depurado casi nada. Solo funciona, 

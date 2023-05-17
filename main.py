@@ -33,7 +33,7 @@ if not ret:
     sys.exit("No se ha podido tomar una captura")
 
 cv.imshow('Video', frame)
-print(f"Area px: {size}. Area mm^2: {area_game}")
+# print(f"Area px: {size}. Area mm^2: {area_game}")}
 detections = domino_vision.pieces_detection(frame, size, size_mm=area_game)
 # recognitions = domino_vision.pieces_recognition(frame, size, pieces=detections)
 # if len(recognitions):

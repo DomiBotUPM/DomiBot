@@ -29,7 +29,7 @@ recognitions = domino_vision.ordenar_piezas(recognitions)
 valores_piezas = []
 
 for pieza in recognitions:
-    posicion_pieza = conversionCoordenadasJuego(pieza.center[0], pieza.center[1], pieza.angle)
+    posicion_pieza = conversionCoordenadasJuego(pieza.center_mm[0], pieza.center_mm[1], pieza.angle)
     valores_piezas.extend(posicion_pieza)
 
 

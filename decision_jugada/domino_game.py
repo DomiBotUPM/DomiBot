@@ -1,8 +1,8 @@
-import sys
-sys.path.append("..\vision")
+# import sys
+# sys.path.append("..\vision")
 
 import numpy as np
-from vision.opencv.piece import Piece
+from .pieza_sencilla import PiezaSencilla
 
 def distanciaPiezas(pieza1, pieza2, orden):
     c1 = np.array(pieza1.center)
@@ -20,27 +20,27 @@ def masCercanos(pieza_elegida, piezas, orden):
 
     return indices_orden, distancias
 
-def numeroComun(pieza1: Piece, pieza2: Piece):
-    if pieza1.type[0] == pieza2.type[0]:
-        return pieza1.type[0]
-    elif pieza1.type[0] == pieza2.type[2]:
-        return pieza1.type[0]
-    elif pieza1.type[2] == pieza2.type[0]:
-        return pieza1.type[2]
-    elif pieza1.type[2] == pieza2.type[2]:
-        return pieza1.type[2]
+def numeroComun(pieza1, pieza2):
+    if pieza1.v1 == pieza2.v1:
+        return pieza1.v1
+    elif pieza1.v1 == pieza2.v2:
+        return pieza1.v1
+    elif pieza1.v2 == pieza2.v1:
+        return pieza1.v2
+    elif pieza1.v2 == pieza2.v2:
+        return pieza1.v2
     else: 
         return -1
     
 def numeroDiferenteExtremo(pieza_extremo, pieza_interior):
-    if pieza_extremo.type[0] == pieza_interior.type[0]:
-        return pieza_extremo.type[2]
-    elif pieza_extremo.type[0] == pieza_interior.type[2]:
-        return pieza_extremo.type[2]
-    elif pieza_extremo.type[2] == pieza_interior.type[0]:
-        return pieza_extremo.type[0]
-    elif pieza_extremo.type[2] == pieza_interior.type[2]:
-        return pieza_extremo.type[0]
+    if pieza_extremo.v1 == pieza_interior.v1:
+        return pieza_extremo.v2
+    elif pieza_extremo.v1 == pieza_interior.v2:
+        return pieza_extremo.v2
+    elif pieza_extremo.v2 == pieza_interior.v1:
+        return pieza_extremo.v1
+    elif pieza_extremo.v2 == pieza_interior.v2:
+        return pieza_extremo.v1
     else: 
         return -1
 
@@ -49,9 +49,9 @@ def extremosTablero(tablero):
         return []
     elif len(tablero) == 1: # en teoria siempre deberia ser doble pero bueeeno
         if tablero[0].esDoble():
-            return [tablero[0].type[0], tablero[0].type[0]]
+            return [tablero[0].v1, tablero[0].v1]
         else:
-            return [tablero[0].type[0], tablero[0].type[2]]
+            return [tablero[0].v1, tablero[0].v2]
         
     nc1 = numeroDiferenteExtremo(tablero[0], tablero[1])
     nc2 = numeroDiferenteExtremo(tablero[-1], tablero[-2])
@@ -68,19 +68,14 @@ def jugadasDisponibles(tablero, piezas_robot):
     posibles_jugadas_2 = []
 
     for pieza in piezas_robot:
-        if pieza.type[0] == extremos[0] or pieza.type[2] == extremos[0]:
+        if pieza.v1 == extremos[0] or pieza.v2 == extremos[0]:
             posibles_jugadas_1.append(pieza)
-        if pieza.type[0] == extremos[1] or pieza.type[2] == extremos[1]:
+        if pieza.v1 == extremos[1] or pieza.v2 == extremos[1]:
             posibles_jugadas_2.append(pieza)
     
     return posibles_jugadas_1, posibles_jugadas_2
 
-
-# #######################################
-# ######## FUNCIONES IMPORTANTES ########
-# #######################################
-
-
+# solo para test, bastante inutil
 def clasificarPiezas(piezas, alto_imagen, alto_zona_robot):
     piezas_tablero= [] 
     piezas_robot = []
@@ -92,6 +87,13 @@ def clasificarPiezas(piezas, alto_imagen, alto_zona_robot):
             piezas_tablero.append(pieza)
 
     return piezas_tablero, piezas_robot
+
+# #######################################
+# ######## FUNCIONES IMPORTANTES ########
+# #######################################
+
+
+
 
 
 def tableroVirtual(piezas, umbral_dist, orden):

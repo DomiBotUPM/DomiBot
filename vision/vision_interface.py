@@ -48,7 +48,7 @@ class DominoVision:
         self.pieces = identifier.pieces_recognition()
         return self.pieces
     
-    def pieces_detection(self, img: cv.Mat, size: float, size_mm: float=0.0, preprocess=True) -> List[Piece]:
+    def pieces_detection(self, img, size, size_mm=0.0, preprocess=True):
         """Deteccion de las fichas de domino presentes en la zona
 
         Returns:
@@ -111,7 +111,7 @@ class DominoVision:
             self.new_turn = False
         return self.new_turn
 
-    def test_with_image(self, filename: str):
+    def test_with_image(self, filename):
         """Test rapido con una imagen. Se realizan tanto detecciones como reconocimientos
 
         Args:
@@ -134,7 +134,7 @@ class DominoVision:
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-    def test_with_video(self, channel: int=1, size_mm: float=0.0) -> None:
+    def test_with_video(self, channel=1, size_mm=0.0) -> None:
         """Test rapido en tiempo real. Se realizan tanto detecciones como reconocimientos ciclicamente.
 
         Args:

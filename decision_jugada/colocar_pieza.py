@@ -1,8 +1,8 @@
-import sys
-sys.path.append("..\vision")
+# import sys
+# sys.path.append("..\vision")
 
 import numpy as np
-from vision.opencv.piece import Piece
+from .pieza_sencilla import PiezaSencilla
 from .domino_game import numeroComun
 
 def piezasVerticalSeguidas(tablero, direccion, ancho_pieza):
@@ -54,11 +54,11 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
     if pieza_robot.esDoble():
         angulo_origen = pieza_robot.angle
         # HORIZONTAL + A LA IZQUIERDA
-        if abs(pieza_tablero.angle) < 15 and proxima_direccion_horizontal == 'izquierda':
+        if pieza_tablero.esHorizontal() and proxima_direccion_horizontal == 'izquierda':
             destino = [pieza_tablero.center[0] - longitud_pieza, pieza_tablero.center[1]]
             angulo_destino = 90
         # HORIZONTAL + A LA DERECHA
-        elif abs(pieza_tablero.angle) < 15 and proxima_direccion_horizontal == 'derecha':
+        elif pieza_tablero.esHorizontal() and proxima_direccion_horizontal == 'derecha':
             destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1]]
             angulo_destino = 90 
         # VERTICAL + ABAJO
@@ -80,12 +80,12 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
             angulo_origen = pieza_robot.angle + 180
             
         # HORIZONTAL + ABAJO
-        if abs(pieza_tablero.angle) < 15 and movimiento["direccion"] == 'abajo':
+        if pieza_tablero.esHorizontal() and movimiento["direccion"] == 'abajo':
             destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza]
             angulo_destino = 90
             angulo_origen += 0
         # HORIZONTAL + ARRIBA
-        elif abs(pieza_tablero.angle) < 15 and movimiento["direccion"] == 'arriba':
+        elif pieza_tablero.esHorizontal() and movimiento["direccion"] == 'arriba':
             destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1]]
             angulo_destino = 90
             angulo_origen += 180
@@ -136,7 +136,7 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
 
 
         # HORIZONTAL + A LA IZQUIERDA -> ¿se podria mirar simplemente con el 'arriba' o 'abajo'? -> NO
-        if abs(pieza_tablero.angle) < 15 and proxima_direccion_horizontal == 'izquierda':
+        if pieza_tablero.esHorizontal() and proxima_direccion_horizontal == 'izquierda':
             # poner a continuacion
             if pieza_tablero.center[0] - longitud_pieza*RATIO_DIST > limite1:
                 destino = [pieza_tablero.center[0] - longitud_pieza*RATIO_DIST, pieza_tablero.center[1]]
@@ -153,7 +153,7 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
                 angulo_destino = 90
                 angulo_origen += 180
         # HORIZONTAL + A LA DERECHA
-        elif abs(pieza_tablero.angle) < 15 and proxima_direccion_horizontal == 'derecha':
+        elif pieza_tablero.esHorizontal() and proxima_direccion_horizontal == 'derecha':
             # poner a continuacion
             if pieza_tablero.center[0] + longitud_pieza*RATIO_DIST < limite2:
                 destino = [pieza_tablero.center[0] + longitud_pieza*RATIO_DIST, pieza_tablero.center[1]]
