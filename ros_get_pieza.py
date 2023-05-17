@@ -4,6 +4,7 @@ import os
 from vision.vision_interface import DominoVision
 import cv2 as cv
 import sys
+from vision.conversion_coordenadas import conversionCoordenadasJuego
 
 # datos generales
 width_game = 314
@@ -25,8 +26,10 @@ detections = domino_vision.pieces_detection(frame, size, size_mm=area_game)
 recognitions = domino_vision.pieces_recognition(frame, size, pieces=detections)
 recognitions = domino_vision.ordenar_piezas(recognitions)
 
-x_px = recognitions[0].center[0]
-y_px = recognitions[0].center[1]
-theta_px = recognitions[0].angle
+valores_piezas = []
+
+for pieza in recognitions:
+    posicion_pieza = conversionCoordenadasJuego(pieza.center[0], pieza.center[1], pieza.angle)
+    valores_piezas.extend(posicion_pieza)
 
 

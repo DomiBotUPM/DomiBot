@@ -4,13 +4,14 @@ import decision_jugada.colocar_pieza as colopieza
 from decision_jugada.logica import logica
 from vision.vision_interface import DominoVision
 import cv2
+from vision.conversion_coordenadas import conversionCoordenadasJuego
 
 # esto son constantes que me he inventado
 ORDEN_NORMA = 2
 LONGITUD_PIEZA  = 80
 ANCHURA_PIEZA   = 40 
 UMBRAL_DIST     = LONGITUD_PIEZA * 1.5
-alto_img        = 480
+ALTO_IMG        = 480
 ANCHO_IMG       = 640
 ALTO_MANO_ROBOT = 140
 LIMITE1 = 100
@@ -44,10 +45,9 @@ x_px = recognitions[0].center_mm[0]
 y_px = recognitions[0].center_mm[1]
 theta_px = recognitions[0].angle
 
-# aaa = colopieza.conversion_coordenadas_juego(x_px, y_px, theta_px)
-# print(aaa)
-b = 55
-print("aaaa", b)
+aaa = conversionCoordenadasJuego(x_px, y_px, theta_px)
+print(aaa)
+
 
 
 # # Ordena las piezas

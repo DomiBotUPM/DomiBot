@@ -8,7 +8,7 @@ from vision.opencv.piece import Piece
 # LEER, IMPORTANTE
 # No se si funciona esto porque esta hecho muy a huevo y no he depurado casi nada. Solo funciona, 
 # si las piezas son horizontales y verticales, para lo cual hay que usar mi version de la vision.
-# Esta version mia de la vision (v3) solo funciona con piezas ligermaente separadas. En caso de tener
+# Esta version mia de la vision (v3) solo funciona con piezas ligeramente separadas. En caso de tener
 # que robar, devuelve 0, 0, 0, 0...
 
 
