@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 from .preprocessing import preprocessing_img
-from .pieces_detection_v3 import PiecesDetector
+from .pieces_detection_v3_python2 import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
@@ -57,7 +57,7 @@ class PiecesIdentifier:
         masked = cv.bitwise_and(self.processed_img, piece.mask)
         
         # Contornos internos a la pieza
-        orig_contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, orig_contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = round(6e-5*self.processed_img.size,2)
         if self.verbose: print("Area minima de referencia para descartar ruido:", ref_min)
         filtered_contours = [contour for contour in orig_contours if cv.contourArea(contour) > ref_min]
@@ -100,7 +100,7 @@ class PiecesIdentifier:
         # Giramos la pieza para tenerlo en posicion horizontal o vertical
         if self.verbose: print("Se hace giro de", round(piece.angle, 2))
         img_r = imutils.rotate(masked, piece.angle)
-        rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = 0.01*piece_area
         if self.verbose: print("Area minima de referencia:", ref_min)
         filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]

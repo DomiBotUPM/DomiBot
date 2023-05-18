@@ -68,7 +68,7 @@ class PiecesDetector:
         img_i = self.img.copy()
         
         # Detectar contornos
-        contours, _ = cv.findContours(self.processed_img, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, contours, _ = cv.findContours(self.processed_img, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Minima area para un punto
         
         # Si no hay ningun contorno minimamente grande, se finaliza la deteccion
@@ -178,7 +178,7 @@ class PiecesDetector:
         
         masked = cv.bitwise_and(self.processed_img, piece.mask)
         # Detectar contornos
-        contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        _, contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         filtered_contours = [contour for contour in contours if cv.contourArea(contour) > 1.6e-4*self.size] # Minima area para un punto
         # Encontrar solo las lineas separadoras de las piezas
         pieces = []

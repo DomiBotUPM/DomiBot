@@ -4,8 +4,8 @@ import time
 from datetime import datetime
 from typing import List
 
-from .opencv.pieces_recognition_v3_python3 import PiecesIdentifier
-from .opencv.pieces_detection_v3_python3 import PiecesDetector
+from .opencv.pieces_recognition_v2 import PiecesIdentifier
+from .opencv.pieces_detection_v2 import PiecesDetector
 from .opencv.preprocessing import preprocessing_img
 from .opencv.piece import Piece
 

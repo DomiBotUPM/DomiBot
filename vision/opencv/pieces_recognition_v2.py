@@ -9,7 +9,7 @@ from .pieces_detection_v2 import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
-    def __init__(self, img, size, pieces, preprocess=True, verbose=False, visualize=False):
+    def __init__(self, img: cv.Mat, size: float, pieces: List[Piece]=[], preprocess=True, verbose=False, visualize=False):
         """Inicializar detector de piezas
 
         Args:
@@ -32,13 +32,13 @@ class PiecesIdentifier:
         
         self.processed_img = self.__preprocess_img(img)
 
-    def __preprocess_img(self, img):
+    def __preprocess_img(self, img: cv.Mat):
         if self.preprocess:
             return preprocessing_img(img, visualize=False)
         else:
             return img
     
-    def __piece_recognition(self, piece, img, copy_img=True):
+    def __piece_recognition(self, piece: Piece, img: cv.Mat, copy_img=True) -> Piece:
         """Reconocimiento de pieza que ha sido aislada a partir de una mascara
 
         Args:
@@ -95,7 +95,7 @@ class PiecesIdentifier:
                 elif inner_area < 0.1*piece_area:
                     line_contours.append(box) # linea separadora
                     
-                if self.verbose: print("Area interna:", round(inner_area,2), ". Ratio:", round(ratio,2), ". Centro:", np.round(center_i,2), ".")
+                if self.verbose: print("Area interna:", round(inner_area,2), ". Ratio:", round(ratio,2), ". Centro:", np.round(center_i,2))
 
         # Giramos la pieza para tenerlo en posicion horizontal o vertical
         cond_angle = piece.angle < 0.95*90 or piece.angle > 1.05*piece.angle
@@ -147,14 +147,11 @@ class PiecesIdentifier:
         # El primer valor siempre debe ser mayor igual que el segundo
         piece.type = str(max(n_dots_up,n_dots_down)) + "x" + str(min(n_dots_up,n_dots_down))
         
-        # if piece.type == "9x0":
-        #     cv.imshow("Caso 9x0", img_r)
-        
         if self.verbose: print("Pieza de tipo", piece.type)
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
         return piece
     
-    def __visualize_piece_contours(self, img_i, piece, dot_contours=[], line_contours=[]) -> None:
+    def __visualize_piece_contours(self, img_i, piece: Piece, dot_contours=[], line_contours=[]) -> None:
         cv.drawContours(img_i,[piece.contour],0,(255,0,0),thickness=2)
         for c in dot_contours:
             radius_c = round(abs(np.sqrt((c[1][0] - c[0][0])**2 + (c[1][1] - c[0][1])**2))/2)

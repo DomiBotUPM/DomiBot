@@ -9,7 +9,7 @@ from .pieces_detection_v3 import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
-    def __init__(self, img, size, pieces=[], preprocess=True, verbose=False, visualize=False):
+    def __init__(self, img: cv.Mat, size: float, pieces: List[Piece]=[], preprocess=True, verbose=False, visualize=False):
         """Inicializar detector de piezas
 
         Args:
@@ -32,13 +32,13 @@ class PiecesIdentifier:
         
         self.processed_img = self.__preprocess_img(img)
 
-    def __preprocess_img(self, img):
+    def __preprocess_img(self, img: cv.Mat):
         if self.preprocess:
             return preprocessing_img(img, visualize=False)
         else:
             return img
     
-    def __piece_recognition(self, piece, img, copy_img=True):
+    def __piece_recognition(self, piece: Piece, img: cv.Mat, copy_img=True) -> Piece:
         """Reconocimiento de pieza que ha sido aislada a partir de una mascara
 
         Args:
@@ -57,7 +57,7 @@ class PiecesIdentifier:
         masked = cv.bitwise_and(self.processed_img, piece.mask)
         
         # Contornos internos a la pieza
-        _, orig_contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        orig_contours, _ = cv.findContours(masked, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = round(6e-5*self.processed_img.size,2)
         if self.verbose: print("Area minima de referencia para descartar ruido:", ref_min)
         filtered_contours = [contour for contour in orig_contours if cv.contourArea(contour) > ref_min]
@@ -100,7 +100,7 @@ class PiecesIdentifier:
         # Giramos la pieza para tenerlo en posicion horizontal o vertical
         if self.verbose: print("Se hace giro de", round(piece.angle, 2))
         img_r = imutils.rotate(masked, piece.angle)
-        _, rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+        rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
         ref_min = 0.01*piece_area
         if self.verbose: print("Area minima de referencia:", ref_min)
         filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
@@ -111,7 +111,7 @@ class PiecesIdentifier:
             is_vertical = h/w > 1
             print("Pieza vertical:", is_vertical)
             print("Hay", len(filtered_contours) - 1, " contornos internos")
-            
+        
         piece_area = cv.contourArea(filtered_contours[0])
         if self.verbose: print("Area pieza grande:", piece_area)
         
@@ -131,7 +131,7 @@ class PiecesIdentifier:
         n_dots_up = len([dot for dot in dots if dot[0] < ref[0]])
         n_dots_down = len([dot for dot in dots if dot[0] > ref[0]])
         if self.verbose: print("Hay", len(dots), " puntos. Arriba/Izquierda:", n_dots_up, ". Abajo/Derecha:", n_dots_down)
-
+        
         piece.dots = [n_dots_up, n_dots_down]
         # El primer valor siempre debe ser mayor igual que el segundo
         piece.type = str(max(n_dots_up,n_dots_down)) + "x" + str(min(n_dots_up,n_dots_down))
@@ -140,7 +140,7 @@ class PiecesIdentifier:
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
         return piece
     
-    def __visualize_piece_contours(self, img_i, piece, dot_contours=[], line_contours=[]):
+    def __visualize_piece_contours(self, img_i, piece: Piece, dot_contours=[], line_contours=[]) -> None:
         cv.drawContours(img_i,[piece.contour],0,(255,0,0),thickness=2)
         for c in dot_contours:
             radius_c = round(abs(np.sqrt((c[1][0] - c[0][0])**2 + (c[1][1] - c[0][1])**2))/2)
@@ -156,7 +156,7 @@ class PiecesIdentifier:
         cv.putText(img_i, piece.type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
         cv.imshow("Reconocimiento de piezas", img_i)
     
-    def pieces_recognition(self):
+    def pieces_recognition(self) -> List[Piece]:
         """Identificacion de piezas utilizando la libreria OpenCV
 
         Returns:

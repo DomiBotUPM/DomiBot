@@ -8,10 +8,6 @@ height_game = 314
 area_game = width_game*height_game
 domino_vision = DominoVision(visualize=True, verbose=True)
 
-# Probar directamente desde la camara
-# domino_vision.test_with_video(channel=0, size_mm=area_game)
-# domino_vision.view_video(channel=0)
-
 # Probar con imagenes
 
 # path_dir = os.path.abspath("vision/fotos_ur3/")
@@ -34,12 +30,8 @@ if not ret:
 
 cv.imshow('Video', frame)
 # print(f"Area px: {size}. Area mm^2: {area_game}")}
-detections = domino_vision.pieces_detection(frame, size, size_mm=area_game)
-# recognitions = domino_vision.pieces_recognition(frame, size, pieces=detections)
-# if len(recognitions):
-#     print(f"Se han reconocido {len(recognitions)} piezas")
-# else:
-#     print(f"No se ha podido reconocer ninguna pieza")
+# detections = domino_vision.pieces_detection(frame, size, size_mm=0.0)
+recognitions = domino_vision.pieces_recognition(frame, size, pieces=[])
 
 capture.release()
 cv.waitKey(0)
