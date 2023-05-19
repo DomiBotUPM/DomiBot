@@ -1,6 +1,7 @@
 import cv2 as cv
 from typing import List, Tuple
 import numpy as np
+import math
 
 from .preprocessing import preprocessing_img
 from .piece import Piece
@@ -63,6 +64,35 @@ class PiecesDetector:
         
     def set_ratio_px2mm(self, ratio):
         self.ratio_px2mm = ratio
+        
+    def get_angle_from_box(self, box):
+        # Obtenemos primero el vertice que se encuentra mas abajo
+        idx_lower_vertex = box[:, 1].argsort()[::-1][0]
+        num_vertex = len(box[:, 0])
+        # Obtenemos sus vecinos
+        neighbour_indexes = [idx_lower_vertex-1, idx_lower_vertex+1]
+        if neighbour_indexes[0] < 0:
+            neighbour_indexes[0] = num_vertex - 1
+        elif neighbour_indexes[1] >= num_vertex:
+            neighbour_indexes[1] = 0
+        
+        # Obtenemos el vecino mas alejado para seguir siempre el mismo criterio
+        dist_max = 0
+        idx_max_dist = -1
+        for idx in neighbour_indexes:
+            distance = math.dist(box[idx], box[idx_lower_vertex])
+            if distance > dist_max:
+                dist_max = distance
+                idx_max_dist = idx
+        
+        # Calculamos el angulo a partir de la tangente dy/dx
+        dy = box[idx_lower_vertex,1] - box[idx_max_dist,1]
+        dx = box[idx_max_dist,0] - box[idx_lower_vertex,0]
+        angle = np.rad2deg(np.arctan2(dy,dx))
+        
+        if self.verbose: print("Angulo a partir de contorno rectangular:", round(angle,2))
+        
+        return angle
     
     def detect_pieces(self) -> List[Piece]:
         """Deteccion de las fichas de domino presentes en la zona
@@ -97,33 +127,13 @@ class PiecesDetector:
             # Para que sea una pieza el ancho debe ser la mitad que el alto y debe ser al menos de un tamano concreto
             cond_width_rectangle = min(width, height) > np.sqrt(min_area_piece/2)
             if area > min_area_piece and cond_width_rectangle: # Buscamos que al menos su area y su ancho sean de un tamaño minimo
-                # ########## COMIENZO DE CAMBIOS DE PABLO ##########
-                if (ratio > 0.45 and ratio < 0.55):  
-                    box = np.int64(cv.boxPoints((center, (width,height), angle)))
-                    mask = np.zeros(self.processed_img.shape, np.uint8)
-                    cv.fillPoly(mask, [box], color=(255))
-                    if angle > 45: # horizontal
-                        angle = angle - 90
-                    else: # vertical
-                        angle = angle + 90
-                    pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
-                    if self.verbose: print("Area del contorno:", area, ". Area del rectangulo:", round(width,1), "*", round(height,1), " =", round(width*height,2))
-                elif (ratio > 1.9 and ratio < 2.1): # horizontal o vertical pero con un angulo logico
-                    box = np.int64(cv.boxPoints((center, (width,height), angle)))
-                    mask = np.zeros(self.processed_img.shape, np.uint8)
-                    cv.fillPoly(mask, [box], color=(255))
-                    pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
-                    if self.verbose: print("Area del contorno:", area, ". Area del rectangulo:", round(width,1), "*", round(height,1), " =", round(width*height,2))
-                else:
-                    box = np.int64(cv.boxPoints((center, (width,height), angle)))
-                    mask = np.zeros(self.processed_img.shape, np.uint8)
-                    cv.fillPoly(mask, [box], color=(255))
-                    pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
-                    if self.verbose: print("Area del contorno:", area, ". Area del rectangulo:", round(width,1), "*", round(height,1), " =", round(width*height,2))
-
-                # ########## FINAL DE CAMBIOS DE PABLO ##########         
-
-                
+                box = np.int64(cv.boxPoints((center, (width,height), angle)))
+                mask = np.zeros(self.processed_img.shape, np.uint8)
+                cv.fillPoly(mask, [box], color=(255))
+                angle = self.get_angle_from_box(box)
+                pieces.append(Piece(mask, box, np.round(center,3), angle, size=(round(width,3), round(height,3))))
+                if self.verbose: print("Area del contorno:", area, ". Area del rectangulo:", round(width,1), "*", round(height,1), " =", round(width*height,2), "Angulo:", angle)
+        
         if self.verbose: print("NO de elementos:", len(filtered_contours), ". NO de candidatos a piezas:", len(pieces))
         
         # Si no se ha encontrado ningun candidato a pieza, se finaliza la deteccion
@@ -209,20 +219,16 @@ class PiecesDetector:
                 if width > height: # Horizontal
                     new_width = 19/self.ratio_px2mm
                     new_height = 38/self.ratio_px2mm
-                    if angle > 45: 
-                        true_angle = angle - 90
-                    else: # vertical
-                        true_angle = angle + 90
                 else: # Vertical
                     new_width = 38/self.ratio_px2mm
                     new_height = 19/self.ratio_px2mm
-                    true_angle = angle
                 
                 box_piece = np.int64(cv.boxPoints((center, (new_width,new_height), angle)))
                 new_mask = np.zeros(self.processed_img.shape, np.uint8)
                 cv.fillPoly(new_mask, [box_piece], color=(255))
+                true_angle = self.get_angle_from_box(box_piece)
                 pieces.append(Piece(new_mask, box_piece, np.round(center,3), true_angle, size=(round(new_width,3), round(new_height,3))))
-                if self.verbose: print("Nueva pieza encontrada. Area de la linea separadora:", area, ". Area de la pieza:", round(new_width,1), "*", round(new_height,1), " =", round(new_width*new_height,2))
+                if self.verbose: print("Nueva pieza encontrada. Area de la linea separadora:", area, ". Area de la pieza:", round(new_width,1), "*", round(new_height,1), " =", round(new_width*new_height,2), "Angulo:", true_angle)
                 # ########## FIN DE CAMBIOS DE PABLO ##########
         if self.verbose: print("Num de elementos:", len(filtered_contours), ". Num de piezas detectadas:", len(pieces))
         # if self.visualize: cv.imshow("Separacion de piezas en el juego", img_i)
@@ -256,8 +262,8 @@ class PiecesDetector:
         if self.visualize and img_i is not None:
             cx = round(piece.center[0])
             cy = round(piece.center[1])
-            cv.rectangle(img_i, (cx-34, cy-6), (cx+34, cy+6), (255,255,255), thickness=-1)
-            cv.putText(img_i, "(" + str(round(center[0],1)) + "," + str(round(center[1],1)) + ")", (cx-33, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
+            cv.rectangle(img_i, (cx-48, cy-6), (cx+48, cy+6), (255,255,255), thickness=-1)
+            cv.putText(img_i, "(" + str(round(piece.center[0],1)) + "," + str(round(piece.center[1],1))+ "), " + str(round(piece.angle,1)) , (cx-47, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
             cv.imshow("Localizacion de piezas", img_i)
         
         return center, (width, height), piece.angle

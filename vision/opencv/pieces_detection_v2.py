@@ -1,6 +1,7 @@
 import cv2 as cv
 from typing import List, Tuple
 import numpy as np
+import math
 
 from .preprocessing import preprocessing_img
 from .piece import Piece
@@ -223,8 +224,8 @@ class PiecesDetector:
         if self.visualize and img_i is not None:
             cx = round(piece.center[0])
             cy = round(piece.center[1])
-            cv.rectangle(img_i, (cx-34, cy-6), (cx+34, cy+6), (255,255,255), thickness=-1)
-            cv.putText(img_i, "(" + str(round(center[0],1)) + "," + str(round(center[1],1)) + ")", (cx-33, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
+            cv.rectangle(img_i, (cx-48, cy-6), (cx+48, cy+6), (255,255,255), thickness=-1)
+            cv.putText(img_i, "(" + str(round(center[0],1)) + "," + str(round(center[1],1))+ "), " + str(round(piece.angle,1)) , (cx-47, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
             cv.imshow("Localizacion de piezas", img_i)
         
         return center, (width, height), piece.angle

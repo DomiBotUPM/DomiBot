@@ -97,18 +97,35 @@ class PiecesIdentifier:
                     
                 if self.verbose: print("Area interna:", round(inner_area,2), ". Ratio:", round(ratio,2), ". Centro:", np.round(center_i,2))
 
-        # Giramos la pieza para tenerlo en posicion horizontal o vertical
-        if self.verbose: print("Se hace giro de", round(piece.angle, 2))
-        img_r = imutils.rotate(masked, piece.angle)
-        rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
-        ref_min = 0.01*piece_area
-        if self.verbose: print("Area minima de referencia:", ref_min)
-        filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
+        # Comprobamos que la pieza tenga un cierto giro
+        angle = piece.angle % 90
+        cond_angle = angle < 0.95*90 and angle > 5
+        if cond_angle:
+            # Giramos la pieza para tenerlo en posicion horizontal o vertical, dependiendo de que angulo esta mas cerca
+            if (90 - angle) < angle:
+                rot = 90 - angle
+            else:
+                rot = -angle
+            if self.verbose: print("Se hace giro de", round(rot, 2))
+            img_r = imutils.rotate(masked, rot)
+            rot_contours, _ = cv.findContours(img_r, mode=cv.RETR_CCOMP, method=cv.CHAIN_APPROX_SIMPLE)
+            ref_min = 0.01*piece_area
+            if self.verbose: print("Area minima de referencia:", ref_min)
+            filtered_contours = [contour for contour in rot_contours if cv.contourArea(contour) > ref_min]
             
-        if self.verbose: 
-            # Comprobamos si esta en vertical u horizontal -> ahora mismo nos
-            (x,y,w,h) = cv.boundingRect(filtered_contours[0])
-            is_vertical = h/w > 1
+        if len(filtered_contours) == 0:
+            piece.type = "error"
+            return piece
+         
+        # Comprobamos si esta en vertical u horizontal -> ahora mismo nos
+        (x,y,w,h) = cv.boundingRect(filtered_contours[0])
+        is_vertical = h/w > 1
+        # Definimos si comparamos con x o con y
+        index_pos = 0
+        if is_vertical:
+            index_pos = 1
+            
+        if self.verbose:
             print("Pieza vertical:", is_vertical)
             print("Hay", len(filtered_contours) - 1, " contornos internos")
         
@@ -127,9 +144,8 @@ class PiecesIdentifier:
                 dots.append((x,y))
             if self.verbose: print("Area interna:", cv.contourArea(contour), ". Ratio:", round(ratio,2), ". Centro:", x,y)
         # Separamos los puntos en dos grupos
-        # Siempre comparamos con x
-        n_dots_up = len([dot for dot in dots if dot[0] < ref[0]])
-        n_dots_down = len([dot for dot in dots if dot[0] > ref[0]])
+        n_dots_up = len([dot for dot in dots if dot[index_pos] < ref[index_pos]])
+        n_dots_down = len([dot for dot in dots if dot[index_pos] > ref[index_pos]])
         if self.verbose: print("Hay", len(dots), " puntos. Arriba/Izquierda:", n_dots_up, ". Abajo/Derecha:", n_dots_down)
         
         piece.dots = [n_dots_up, n_dots_down]

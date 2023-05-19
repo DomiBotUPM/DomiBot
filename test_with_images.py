@@ -31,8 +31,8 @@ def images_online():
         sys.exit("No se ha podido tomar una captura")
 
     cv.imshow('Imagen', frame)
-    # detections = domino_vision.pieces_detection(frame, size, size_mm=0.0)
-    recognitions = domino_vision.pieces_recognition(frame, size, pieces=[])
+    detections = domino_vision.pieces_detection(frame, size, size_mm=0.0)
+    recognitions = domino_vision.pieces_recognition(frame, size, pieces=detections)
 
     capture.release()
     cv.waitKey(0)
