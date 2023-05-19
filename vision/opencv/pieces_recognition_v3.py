@@ -168,7 +168,7 @@ class PiecesIdentifier:
             cv.drawContours(img_i,[l],0,(0,0,255),thickness=1)
         cx = round(piece.center[0])
         cy = round(piece.center[1])
-        cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+25), (255,255,255), thickness=-1)
+        cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+6), (255,255,255), thickness=-1)
         cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+6), (255,255,255), thickness=-1)
         cv.putText(img_i, piece.type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
         cv.imshow("Reconocimiento de piezas", img_i)
