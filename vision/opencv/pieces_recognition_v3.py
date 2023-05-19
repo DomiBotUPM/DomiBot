@@ -9,7 +9,7 @@ from .pieces_detection_v3 import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
-    def __init__(self, img: cv.Mat, size: float, pieces: List[Piece]=[], preprocess=True, verbose=False, visualize=False):
+    def __init__(self, img, size, pieces=[], preprocess=True, verbose=False, visualize=False):
         """Inicializar detector de piezas
 
         Args:
@@ -32,13 +32,13 @@ class PiecesIdentifier:
         
         self.processed_img = self.__preprocess_img(img)
 
-    def __preprocess_img(self, img: cv.Mat):
+    def __preprocess_img(self, img):
         if self.preprocess:
             return preprocessing_img(img, visualize=False)
         else:
             return img
     
-    def __piece_recognition(self, piece: Piece, img: cv.Mat, copy_img=True) -> Piece:
+    def __piece_recognition(self, piece, img, copy_img=True):
         """Reconocimiento de pieza que ha sido aislada a partir de una mascara
 
         Args:
@@ -128,7 +128,7 @@ class PiecesIdentifier:
         if self.verbose:
             print("Pieza vertical:", is_vertical)
             print("Hay", len(filtered_contours) - 1, " contornos internos")
-        
+            
         piece_area = cv.contourArea(filtered_contours[0])
         if self.verbose: print("Area pieza grande:", piece_area)
         
@@ -147,7 +147,7 @@ class PiecesIdentifier:
         n_dots_up = len([dot for dot in dots if dot[index_pos] < ref[index_pos]])
         n_dots_down = len([dot for dot in dots if dot[index_pos] > ref[index_pos]])
         if self.verbose: print("Hay", len(dots), " puntos. Arriba/Izquierda:", n_dots_up, ". Abajo/Derecha:", n_dots_down)
-        
+
         piece.dots = [n_dots_up, n_dots_down]
         # El primer valor siempre debe ser mayor igual que el segundo
         piece.type = str(max(n_dots_up,n_dots_down)) + "x" + str(min(n_dots_up,n_dots_down))
@@ -156,7 +156,7 @@ class PiecesIdentifier:
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
         return piece
     
-    def __visualize_piece_contours(self, img_i, piece: Piece, dot_contours=[], line_contours=[]) -> None:
+    def __visualize_piece_contours(self, img_i, piece, dot_contours=[], line_contours=[]):
         cv.drawContours(img_i,[piece.contour],0,(255,0,0),thickness=2)
         for c in dot_contours:
             radius_c = round(abs(np.sqrt((c[1][0] - c[0][0])**2 + (c[1][1] - c[0][1])**2))/2)
@@ -172,7 +172,7 @@ class PiecesIdentifier:
         cv.putText(img_i, piece.type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
         cv.imshow("Reconocimiento de piezas", img_i)
     
-    def pieces_recognition(self) -> List[Piece]:
+    def pieces_recognition(self):
         """Identificacion de piezas utilizando la libreria OpenCV
 
         Returns:
