@@ -7,7 +7,7 @@ from .piece import Piece
 
 
 class PiecesDetector:
-    def __init__(self, img: cv.Mat, size: float, size_mm: float = 0.0, preprocess=True, verbose=False, visualize=False):
+    def __init__(self, img, size, size_mm = 0.0, preprocess=True, verbose=False, visualize=False):
         """Inicializar detector de piezas
 
         Args:
@@ -22,7 +22,7 @@ class PiecesDetector:
         self.preprocess = preprocess
         self.verbose = verbose
         self.visualize = visualize
-        self.pieces: List[Piece] = []
+        self.pieces = []
         self.PIECE_WIDTH_MM = 19
         self.PIECE_HEIGHT_MM = 38
         
@@ -34,18 +34,15 @@ class PiecesDetector:
         else:
             self.ratio_px2mm = 0.0
             self.ref_piece_area = 0.0
-        # Pruebas
-        # self.ratio_px2mm = 0.438
-        # self.ref_piece_area = 2*43.454**2
     
-    def __preprocess_img(self, img: cv.Mat):
+    def __preprocess_img(self, img):
         img_i = img.copy()
         if self.preprocess:
             return preprocessing_img(img_i, visualize=False)
         else:
             return img_i
     
-    def get_ratio_px2mm_from_piece(self, piece: Piece):
+    def get_ratio_px2mm_from_piece(self, piece):
         """Obtener el ratio de conversion de pixeles a milimetros, a partir de una pieza. 
 
         Args:
@@ -57,14 +54,11 @@ class PiecesDetector:
         width = min(piece.size[0], piece.size[1])
         return self.PIECE_WIDTH_MM / width
         
-    def change_img(self, new_img: cv.Mat, new_size: float):
+    def change_img(self, new_img, new_size):
         self.img = new_img
         self.size = new_size
-        
-    def set_ratio_px2mm(self, ratio):
-        self.ratio_px2mm = ratio
     
-    def detect_pieces(self) -> List[Piece]:
+    def detect_pieces(self):
         """Deteccion de las fichas de domino presentes en la zona
 
         Returns:
@@ -83,21 +77,23 @@ class PiecesDetector:
             return []
         
         # Encontrar solo los contornos que sean de piezas
-        pieces: List[Piece] = []
+        pieces = []
         if self.ref_piece_area > 0:
             min_area_piece = 0.8*self.ref_piece_area
         else:
             min_area_piece = 7e-3*self.size
         
         if self.verbose: print("Tamano de referencia para detectar pieza:", min_area_piece)
+        # ########## COMIENZO DE CAMBIOS DE PABLO ##########
         for contour in filtered_contours:
+            area = cv.contourArea(contour)
+            # El tamano minimo para un punto
+            if area < 1.6e-4*self.size:
+                continue
             center, (width,height), angle = cv.minAreaRect(contour)
-            ratio = min(width, height)/ max(width,height)
-            area = width*height
+            ratio = width/height
             # Para que sea una pieza el ancho debe ser la mitad que el alto y debe ser al menos de un tamano concreto
-            cond_width_rectangle = min(width, height) > np.sqrt(min_area_piece/2)
-            if area > min_area_piece and cond_width_rectangle: # Buscamos que al menos su area y su ancho sean de un tamaño minimo
-                # ########## COMIENZO DE CAMBIOS DE PABLO ##########
+            if width*height > min_area_piece: 
                 if (ratio > 0.45 and ratio < 0.55):  
                     box = np.int64(cv.boxPoints((center, (width,height), angle)))
                     mask = np.zeros(self.processed_img.shape, np.uint8)
@@ -138,8 +134,6 @@ class PiecesDetector:
         else:
             ref_area = round(np.mean([piece.get_area() for piece in pieces]),2)
         
-        if self.verbose: print("Referencia para detectar piezas anomalas:", ref_area)
-        
         pieces_big = [p for p in pieces if p.get_area() >= 1.5*ref_area]
         pieces = [p for p in pieces if p.get_area() < 1.5*ref_area]
         
@@ -151,7 +145,7 @@ class PiecesDetector:
         if len(pieces_big):
             if self.ratio_px2mm == 0.0:
                 self.ratio_px2mm = self.get_ratio_px2mm_from_piece(pieces[0])
-                if self.verbose: print(f"Pieza utilizada como referencia para ratio. Size:{pieces[0].size[0]}x{pieces[0].size[1]}. Ratio: {round(self.ratio_px2mm, 2)}")
+                if self.verbose: print("Pieza utilizada como referencia para ratio. Ancho:", min(pieces[0].size[0], pieces[0].size[1]), ". Ratio:", round(self.ratio_px2mm, 2))
             for i, piece in enumerate(pieces_big):
                 if self.verbose: 
                     print("Indice de pieza actual:", i)
@@ -164,7 +158,7 @@ class PiecesDetector:
                     if self.visualize:
                         cv.drawContours(img_i,[piece.contour],0,(0,255,0), thickness=2)
         
-            if self.verbose:  print("Num de elementos:", len(contours), ". Num de piezas detectadas:", len(pieces))
+            if self.verbose:  print("NO de elementos:", len(contours), ". NO de piezas detectadas:", len(pieces))
         if self.visualize: cv.imshow("Deteccion de piezas", img_i)
         
         self.pieces = pieces
@@ -172,12 +166,14 @@ class PiecesDetector:
         if self.verbose: print("*"*20, "Se ha finalizado la deteccion de piezas", "*"*20)
         return pieces
     
-    def split_piece(self, piece: Piece) -> List[Piece]:
+    def split_piece(self, piece):
         """Division de una pieza anormalmente grande en sus respectivas internas
 
         Returns:
             List[Piece]: Lista de piezas detectadas.
         """
+        print("splitear")
+
         if self.verbose: print("-"*5, "Se inicia la separacion de piezas", "-"*5)
         
         masked = cv.bitwise_and(self.processed_img, piece.mask)
@@ -197,6 +193,7 @@ class PiecesDetector:
             else: # Si no tenemos la referencia
                 cond_size = width*height < 1e-2*self.size
             
+            # ########## COMIENZO DE CAMBIOS DE PABLO ##########
             # Para que sea una linea separadora el ratio debe ser muy pequeno o muy grande
             if ratio < 0.3 and cond_size:
                 box = np.int64(cv.boxPoints((center, (width,height), angle)))
@@ -205,7 +202,6 @@ class PiecesDetector:
                 
                 if self.verbose: print("Encontrada linea separadora de", round(width,2), "x", round(height,2), "=", round(width*height,2))
                 # Con ayuda del ratio, se obtiene el contorno de la pieza
-                # ########## COMIENZO DE CAMBIOS DE PABLO ##########
                 if width > height: # Horizontal
                     new_width = 19/self.ratio_px2mm
                     new_height = 38/self.ratio_px2mm
@@ -223,14 +219,14 @@ class PiecesDetector:
                 cv.fillPoly(new_mask, [box_piece], color=(255))
                 pieces.append(Piece(new_mask, box_piece, np.round(center,3), true_angle, size=(round(new_width,3), round(new_height,3))))
                 if self.verbose: print("Nueva pieza encontrada. Area de la linea separadora:", area, ". Area de la pieza:", round(new_width,1), "*", round(new_height,1), " =", round(new_width*new_height,2))
-                # ########## FIN DE CAMBIOS DE PABLO ##########
-        if self.verbose: print("Num de elementos:", len(filtered_contours), ". Num de piezas detectadas:", len(pieces))
+            # ########## FIN DE CAMBIOS DE PABLO ##########
+        if self.verbose: print("NO de elementos:", len(filtered_contours), ". NO de piezas detectadas:", len(pieces))
         # if self.visualize: cv.imshow("Separacion de piezas en el juego", img_i)
         
         if self.verbose: print("-"*5, "Se finaliza la separacion de piezas", "-"*5)
         return pieces
     
-    def locate_piece(self, piece: Piece, img: cv.Mat=None, copy_img=True) -> Tuple[float, Tuple[float,float], float]:
+    def locate_piece(self, piece, img=None, copy_img=True):
         """Localizar la pieza con respecto a la imagen o captura realizada
 
         Args:
@@ -262,11 +258,11 @@ class PiecesDetector:
         
         return center, (width, height), piece.angle
 
-    def locate_pieces(self) -> List[Tuple[float, Tuple[float,float], float]]:
+    def locate_pieces(self):
         """Localizar la pieza con respecto a la imagen o captura realizada
         
         Returns:
-            List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y angulo de rotacion en grados.
+            List[Tuple[float, Tuple[float,float], float]]: Lista de localizaciones. Indica: centro en mm, (ancho,alto) en mm y angulo de rotacion en O.
         """
         if not len(self.pieces):
             return []

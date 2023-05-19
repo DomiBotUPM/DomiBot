@@ -19,7 +19,6 @@ domino_vision = DominoVision(visualize=True, verbose=True)
 
 # Probar con una imagen tomada en el momento
 capture = cv.VideoCapture(0)
-
 width = capture.get(cv.CAP_PROP_FRAME_WIDTH)
 height = capture.get(cv.CAP_PROP_FRAME_HEIGHT)
 size = width*height
