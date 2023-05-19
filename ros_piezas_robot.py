@@ -27,8 +27,8 @@ valores_piezas = []
 
 for pieza in recognitions:
     if len(pieza.dots) == 2:
-        valores_piezas.extend([pieza.dots[0], pieza.dots[1]])
+        valores_piezas.append([pieza.dots[0], pieza.dots[1]])
     else:
-        valores_piezas.extend([-1, -1])
+        valores_piezas.append([-1, -1])
 
 print(valores_piezas)

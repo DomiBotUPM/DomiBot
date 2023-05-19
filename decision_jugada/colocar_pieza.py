@@ -42,17 +42,17 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
 
     if movimiento["movimiento"] == 'robar':
         print('Hey, no deberias estar aqui!')
-        return [0, 0], 0, [0, 0], 0
+        return [-1, -1], -1, [-1, -1], -1
     
     pieza_robot = movimiento["pieza_robot"]
     pieza_tablero = movimiento["pieza_tablero"]
     proxima_direccion_horizontal = proximaDireccionHorizontal(tablero, movimiento["direccion"])
 
     origen = pieza_robot.center
+    angulo_origen = pieza_robot.angle
 
     # ------------- PIEZA ROBOT DOBLE ----------------
     if pieza_robot.esDoble():
-        angulo_origen = pieza_robot.angle
         # HORIZONTAL + A LA IZQUIERDA
         if pieza_tablero.esHorizontal() and proxima_direccion_horizontal == 'izquierda':
             destino = [pieza_tablero.center[0] - longitud_pieza, pieza_tablero.center[1]]
@@ -73,102 +73,80 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
     # ------------- PIEZA TABLERO DOBLE ----------------
     elif pieza_tablero.esDoble(): # mas complicado:(
         numero_comun = numeroComun(pieza_robot, pieza_tablero)
-        # pieza origen
-        if pieza_robot.dots[0] == numero_comun:
-            angulo_origen = pieza_robot.angle
-        else:
-            angulo_origen = pieza_robot.angle + 180
             
         # HORIZONTAL + ABAJO
         if pieza_tablero.esHorizontal() and movimiento["direccion"] == 'abajo':
             destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza]
             angulo_destino = 90
-            angulo_origen += 0
         # HORIZONTAL + ARRIBA
         elif pieza_tablero.esHorizontal() and movimiento["direccion"] == 'arriba':
             destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1]]
-            angulo_destino = 90
-            angulo_origen += 180
+            angulo_destino = 90 + 180
         # VERTICAL + IZQUIERDA
         elif proxima_direccion_horizontal == 'izquierda':
             # poner a continuacion
             if pieza_tablero.center[0] - longitud_pieza > limite1:
                 destino = [pieza_tablero.center[0] - longitud_pieza, pieza_tablero.center[1]]
-                angulo_destino = 0
-                angulo_origen += 180
+                angulo_destino = 0 + 180
             # poner abajo 
             elif movimiento["direccion"] == 'abajo': # lio de hacerlo del reves
                 destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza*RATIO_DIST]
-                angulo_destino = 90
-                angulo_origen += 0
+                angulo_destino = 90 + 0
             # poner arriba
             else:
                 destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza*RATIO_DIST]
-                angulo_destino = 90
-                angulo_origen += 180
+                angulo_destino = 90 + 180
         # VERTICAL + DERECHA
         elif proxima_direccion_horizontal == 'derecha':
             # poner a continuacion
             if pieza_tablero.center[0] + longitud_pieza < limite2:
                 destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1]]
-                angulo_destino = 0
-                angulo_origen += 0
+                angulo_destino = 0 + 0
             # poner abajo 
             elif movimiento["direccion"] == 'abajo': # lio de hacerlo del reves
                 destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza*RATIO_DIST]
-                angulo_destino = 90
-                angulo_origen += 0
+                angulo_destino = 90 + 0
             # poner arriba
             else:
                 destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza*RATIO_DIST]
-                angulo_destino = 90
-                angulo_origen += 180
+                angulo_destino = 90 + 180
+                # pieza origen
+
+        if pieza_robot.dots[0] != numero_comun:
+            angulo_destino += 180
         
     # ------------- NO DOBLES ----------------
     else:
         numero_comun = numeroComun(pieza_robot, pieza_tablero)
-
-        # pieza origen
-        if pieza_robot.dots[0] == numero_comun:
-            angulo_origen = pieza_robot.angle
-        else:
-            angulo_origen = pieza_robot.angle + 180
-
 
         # HORIZONTAL + A LA IZQUIERDA -> ¿se podria mirar simplemente con el 'arriba' o 'abajo'? -> NO
         if pieza_tablero.esHorizontal() and proxima_direccion_horizontal == 'izquierda':
             # poner a continuacion
             if pieza_tablero.center[0] - longitud_pieza*RATIO_DIST > limite1:
                 destino = [pieza_tablero.center[0] - longitud_pieza*RATIO_DIST, pieza_tablero.center[1]]
-                angulo_destino = 0
-                angulo_origen += 180
+                angulo_destino = 0 + 180
             # poner abajo 
             elif movimiento["direccion"] == 'abajo': # lio de hacerlo del reves
                 destino = [pieza_tablero.center[0] - ancho_pieza/2, pieza_tablero.center[1] + longitud_pieza]
-                angulo_destino = 90
-                angulo_origen += 0
+                angulo_destino = 90 + 0
             # poner arriba
             else:
                 destino = [pieza_tablero.center[0] - ancho_pieza/2, pieza_tablero.center[1] - longitud_pieza]
-                angulo_destino = 90
-                angulo_origen += 180
+                angulo_destino = 90 + 180
         # HORIZONTAL + A LA DERECHA
         elif pieza_tablero.esHorizontal() and proxima_direccion_horizontal == 'derecha':
             # poner a continuacion
             if pieza_tablero.center[0] + longitud_pieza*RATIO_DIST < limite2:
                 destino = [pieza_tablero.center[0] + longitud_pieza*RATIO_DIST, pieza_tablero.center[1]]
-                angulo_destino = 0
-                angulo_origen += 0
+                angulo_destino = 0 + 0
             # poner abajo 
             elif movimiento["direccion"] == 'abajo': # lio de hacerlo del reves
                 destino = [pieza_tablero.center[0] + ancho_pieza/2, pieza_tablero.center[1] + longitud_pieza]
-                angulo_destino = 90
-                angulo_origen += 0
+                angulo_destino = 90 + 0
             # poner arriba
             else:
                 destino = [pieza_tablero.center[0] + ancho_pieza/2, pieza_tablero.center[1] - longitud_pieza]
-                angulo_destino = 90
-                angulo_origen += 180 
+                angulo_destino = 90 + 180
         # VERTICAL + ABAJO
         elif movimiento["direccion"] == 'abajo':
             # poner a la izquierda o derecha
@@ -176,18 +154,15 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
                 # poner a la derecha (estas en izquierda)
                 if abs(pieza_tablero.center[0] - limite1) < abs(pieza_tablero.center[0] - limite2):
                     destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1] + ancho_pieza/2]
-                    angulo_destino = 0
-                    angulo_origen += 0
+                    angulo_destino = 0 + 0
                 # poner a la izquierda (estas en izquierda)
                 else:
                     destino = [pieza_tablero.center[0] - longitud_pieza, pieza_tablero.center[1] + ancho_pieza/2]
-                    angulo_destino = 0
-                    angulo_origen += 180
+                    angulo_destino = 0 + 180
             # poner abajo
             else:
                 destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza*RATIO_DIST]
-                angulo_destino = 90
-                angulo_origen += 0 
+                angulo_destino = 90 + 0
         # VERTICAL + ARRIBA
         else:
             # poner a la izquierda o derecha
@@ -195,18 +170,17 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
                 # poner a la derecha (estas en izquierda)
                 if abs(pieza_tablero.center[0] - limite1) < abs(pieza_tablero.center[0] - limite2):
                     destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1] - ancho_pieza/2]
-                    angulo_destino = 0
-                    angulo_origen += 0
+                    angulo_destino = 0 + 0
                 # poner a la izquierda (estas en izquierda)
                 else:
                     destino = [pieza_tablero.center[0] - longitud_pieza, pieza_tablero.center[1] - ancho_pieza/2]
-                    angulo_destino = 0
-                    angulo_origen += 180
+                    angulo_destino = 0 + 180
             # poner arriba
             else:
                 destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza*RATIO_DIST]
-                angulo_destino = 90
-                angulo_origen += 180 
+                angulo_destino = 90 + 180
+        if pieza_robot.dots[0] != numero_comun:
+            angulo_destino += 180
 
     angulo_origen = angulo_origen % 360
 

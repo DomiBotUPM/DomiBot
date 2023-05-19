@@ -7,8 +7,7 @@ from vision.conversion_coordenadas import conversionCoordenadasJuego
 import decision_jugada.domino_game as domigame
 import decision_jugada.colocar_pieza as colopieza
 from decision_jugada.logica import logica
-from decision_jugada.pieza_sencilla import PiezaSencilla
-from decision_jugada.pieza_sencilla import convertirArray5 as convertirArray
+from decision_jugada.pieza_sencilla import PiezaSencilla, tablero2piezas
 
 # esto son constantes que me he inventado
 ORDEN_NORMA = 2
@@ -30,6 +29,7 @@ path_dir = os.path.abspath("vision/fotos_ur3/")
 
 # file = "AAAAA.jpg"
 # file = "PIEZAS_TEST2.jpg"
+# file = "20230412_194116.jpg"
 file = "CADENA4.jpg"
 filename = os.path.join(path_dir, file)
 
@@ -51,10 +51,6 @@ for pieza in recognitions:
 # for pieza in piezas_ordenadas:
 #     print([pieza.dots, pieza.center, pieza.center_mm, pieza.angle])
 
-
-
-
-
 valores_piezas = []
 
 # valores reales
@@ -62,15 +58,25 @@ valores_piezas = []
 #     posicion_pieza = conversionCoordenadasJuego(pieza.center_mm[0], pieza.center_mm[1], pieza.angle)
 #     posicion_pieza[0] /= 1000 # paso a mm
 #     posicion_pieza[1] /= 1000 # paso a mm
-#     valores_piezas.extend(posicion_pieza)
-#     valores_piezas.extend([pieza.dots[0], pieza.dots[1]])
+#     if len(pieza.dots) == 2:
+#         posicion_pieza.extend([pieza.dots[0], pieza.dots[1]])
+#     else:
+#         posicion_pieza.extend([-1, -1])
+#     valores_piezas.append(posicion_pieza)
 
 # en pixeles
 for pieza in recognitions:
-    valores_piezas.extend([pieza.center[0], pieza.center[1], pieza.angle])
-    valores_piezas.extend([pieza.dots[0], pieza.dots[1]])
+    #posicion_pieza = conversionCoordenadasJuego(pieza.center[0], pieza.center[1], pieza.angle)
+    posicion_pieza = [pieza.center[0], pieza.center[1], pieza.angle]
+    # posicion_pieza[0] /= 1000 # paso a mm
+    # posicion_pieza[1] /= 1000 # paso a mm
+    if len(pieza.dots) == 2:
+        posicion_pieza.extend([pieza.dots[0], pieza.dots[1]])
+    else:
+        posicion_pieza.extend([-1, -1])
+    valores_piezas.append(posicion_pieza)
 
-piezas_sencillas = convertirArray(valores_piezas)
+piezas_sencillas = tablero2piezas(valores_piezas)
 
 print("Piezas sencillas")
 for pieza in piezas_sencillas:

@@ -23,7 +23,7 @@ class PiezaSencilla:
             return False
 
     def esHorizontal(self):
-        if abs(self.angle) < 45:
+        if abs(self.angle) < 45 or abs(self.angle - 180) < 45:
             return True
         else:
             return False
@@ -32,14 +32,19 @@ class PiezaSencilla:
         return self.v1 + self.v2
     
 
-def convertirArray3(array):
+def tablero2piezas(valores_tablero):
     piezas = []
-    for i in range(int(len(array)/3)):
-        piezas.append(PiezaSencilla(array[3*i + 0], array[3*i + 1], array[3*i + 2]))
+    for valores in valores_tablero:
+        pieza = PiezaSencilla(x=valores[0], y=valores[1], angle=valores[2], v1=valores[3], v2=valores[4])
+        piezas.append(pieza)
     return piezas
 
-def convertirArray5(array):
+def robot2piezas(valores_robot):
     piezas = []
-    for i in range(int(len(array)/5)):
-        piezas.append(PiezaSencilla(array[5*i + 0], array[5*i + 1], array[5*i + 2], array[5*i + 3], array[5*i + 4]))
+    for i in range(len(valores_robot)):
+        if valores_robot[i][0]:
+            pieza = PiezaSencilla(x=i, y=0, angle=0, v1=valores_robot[i][0], v2=valores_robot[i][1])
+        piezas.append(pieza)
     return piezas
+
+

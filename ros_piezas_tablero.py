@@ -1,4 +1,5 @@
-# Que nombre mas malo de archivo
+
+# ROS_PIEZAS_TABLERO
 
 import os
 from vision.vision_interface import DominoVision
@@ -33,11 +34,11 @@ for pieza in recognitions:
     posicion_pieza = conversionCoordenadasJuego(pieza.center_mm[0], pieza.center_mm[1], pieza.angle)
     posicion_pieza[0] /= 1000 # paso a mm
     posicion_pieza[1] /= 1000 # paso a mm
-    valores_piezas.extend(posicion_pieza)
     if len(pieza.dots) == 2:
-        valores_piezas.extend([pieza.dots[0], pieza.dots[1]])
+        posicion_pieza.extend([pieza.dots[0], pieza.dots[1]])
     else:
-        valores_piezas.extend([-1, -1])
+        posicion_pieza.extend([-1, -1])
+    valores_piezas.append(posicion_pieza)
 
 print(valores_piezas)
 
