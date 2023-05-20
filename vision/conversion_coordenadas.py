@@ -3,7 +3,7 @@ def conversionCoordenadasJuego(x_cam_mm, y_cam_mm, theta_cam, x_robot = 270, y_r
     y = ancho_juego - x_cam_mm    # y del robot 
     x = x - alto_juego / 2 + sep_camara_x + x_robot
     y = y - alto_juego / 2 + sep_camara_y + y_robot
-    if abs(theta_cam) < 30:
+    if abs(theta_cam) < 45 or abs(theta_cam - 180) < 45:
         theta = 90
     else:
         theta = 0

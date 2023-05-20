@@ -112,7 +112,7 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
                 angulo_destino = 90 + 180
                 # pieza origen
 
-        if pieza_robot.dots[0] != numero_comun:
+        if pieza_robot.v1 != numero_comun:
             angulo_destino += 180
         
     # ------------- NO DOBLES ----------------
@@ -179,7 +179,7 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
             else:
                 destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza*RATIO_DIST]
                 angulo_destino = 90 + 180
-        if pieza_robot.dots[0] != numero_comun:
+        if pieza_robot.v1 != numero_comun:
             angulo_destino += 180
 
     angulo_origen = angulo_origen % 360

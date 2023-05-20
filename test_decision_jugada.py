@@ -6,7 +6,7 @@ from vision.conversion_coordenadas import conversionCoordenadasJuego
 
 import decision_jugada.domino_game as domigame
 import decision_jugada.colocar_pieza as colopieza
-from decision_jugada.logica import logica
+from decision_jugada.logica import logica, logica_test
 from decision_jugada.pieza_sencilla import PiezaSencilla, tablero2piezas
 
 # esto son constantes que me he inventado
@@ -90,7 +90,7 @@ print([[pieza.v1, pieza.v2] for pieza in piezas_tablero])
 print("piezas_robot: ")
 print([[pieza.v1, pieza.v2] for pieza in piezas_robot])
 
-jugada_logica =  logica(piezas_tablero, piezas_robot)
+jugada_logica =  logica_test(piezas_tablero, piezas_robot)
 print(jugada_logica)
 
 origen0, origen1, angulo_origen, destino0, destino1, angulo_destino = jugada_logica
