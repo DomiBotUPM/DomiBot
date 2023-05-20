@@ -38,7 +38,7 @@ class PiecesIdentifier:
         else:
             return img
     
-    def __piece_recognition(self, piece, img, copy_img=True):
+    def __piece_recognition(self, piece: Piece, img: cv.Mat, copy_img=True):
         """Reconocimiento de pieza que ha sido aislada a partir de una mascara
 
         Args:
@@ -156,7 +156,7 @@ class PiecesIdentifier:
         if self.visualize: self.__visualize_piece_contours(img_i, piece, dot_contours, line_contours)
         return piece
     
-    def __visualize_piece_contours(self, img_i, piece, dot_contours=[], line_contours=[]):
+    def __visualize_piece_contours(self, img_i, piece: Piece, dot_contours=[], line_contours=[]):
         cv.drawContours(img_i,[piece.contour],0,(255,0,0),thickness=2)
         for c in dot_contours:
             radius_c = round(abs(np.sqrt((c[1][0] - c[0][0])**2 + (c[1][1] - c[0][1])**2))/2)
@@ -168,9 +168,9 @@ class PiecesIdentifier:
             cv.drawContours(img_i,[l],0,(0,0,255),thickness=1)
         cx = round(piece.center[0])
         cy = round(piece.center[1])
-        cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+25), (255,255,255), thickness=-1)
-        cv.putText(img_i, "(" + str(piece.dots[0]) + "," + str(piece.dots[1]) + ")", (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
-        cv.putText(img_i, str(round(piece.angle,1)), (cx-12, cy+20), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
+        cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+6), (255,255,255), thickness=-1)
+        cv.rectangle(img_i, (cx-12, cy-6), (cx+12, cy+6), (255,255,255), thickness=-1)
+        cv.putText(img_i, piece.type, (cx-12, cy+3), cv.FONT_HERSHEY_SIMPLEX, 0.3, (0,0,0), 1, cv.LINE_AA)
         cv.imshow("Reconocimiento de piezas", img_i)
     
     def pieces_recognition(self):
