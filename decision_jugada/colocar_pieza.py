@@ -6,21 +6,44 @@ from .pieza_sencilla import PiezaSencilla
 from .domino_game import numeroComun
 
 def piezasVerticalSeguidas(tablero, direccion, ancho_pieza):
+    """Una vez tenemos varias piezas en vertical, se pone un limite al numero seguido de piezas en vertical seguidas (3, sin contar dobles) antes de hacer ya un giro.
+    Esta funcion calcula cuantas hay seguidas en una misma direccion.
+    
+        Args:
+            tablero (List[pieza_sencilla]): piezas ordenadas del tablero. La primera pieza siempre es la del extremo superior (o izquierdo).
+            direccion (string): direccion en la que se estan colocando las piezas: 'arriba' o 'abajo'.
+            ancho_pieza: ancho de la pieza. Usado para detectar si dos piezas estan en la misma vertical, siendo este el valor maximo que se pueden desviar.
+        Returns:
+            np: numero de piezas consecutivas en vertical.
+    """
     np = 0
     if direccion == 'arriba':
         tablero.reverse()
     for pieza in tablero:
+        # si estan en la misma vertical, se suma 1
         if abs(tablero[0].center[0] - pieza.center[0]) < ancho_pieza:
+            # si es doble, no se cuenta
             if pieza.esDoble():
                 continue
             else:
                 np += 1
+                
+        # si no estan en la misma vertical, se termina
         else:
             return np
     return np
 
 def proximaDireccionHorizontal(tablero, direccion):
-    if len(tablero) == 1:
+    """Devuelve la direccion (en horizontal) en la que hay que colocar la proxima pieza.
+ 
+    
+        Args:
+            tablero (List[pieza_sencilla]): piezas ordenadas del tablero. La primera pieza siempre es la del extremo superior (o izquierdo).
+            direccion (string): direccion general del tablero en la que se estan colocando las piezas: 'arriba' (extremo 1) o 'abajo' (extremo 2).
+        Returns:
+            'izquierda' o 'derecha'
+    """
+    if len(tablero) <= 1:
         return 'derecha'
     elif direccion == 'abajo':
         if tablero[0].center[0] < tablero[1].center[0]:
@@ -38,10 +61,31 @@ def proximaDireccionHorizontal(tablero, direccion):
 # #######################################
 
 def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tablero):
+    """Segun el movimiento calculado en decision_jugada.domino_game.decidirMovimiento(), se dan las coordenadas de la pieza a utilizar (o su indice, si asi se han pasado).
+    Si la orden es de robar en vez de jugar, todos los valores se ponen en -1.
+    Si es el primer turno del robot, esto puede que funcione bastante mal...
+        Args:
+            movimiento (Dictionary): conjunto de ordenes que hay que jugar. Los valores son:
+            -Comunes:
+                'movimiento':       'jugada' si debe colocar una pieza. 'robar' si no hay pieza que pueda ser jugada.
+            -Si movimiento['movimiento'] = 'jugada'
+                'pieza_tablero':    pieza del tablero a continuacion de la cual el robot va a poner la suya.
+                'pieza_robot':      pieza del robot que se desea jugar.
+                'direccion':        en caso de que la ficha no se pueda colocar al lado debido a que se rebasan los limites del tablero, se debe colocar 'arriba' (extremo 1 del tablero) o 'abajo' (extremo dos del tablero). 
+            limite1:        posiciones x por debajo de las cuales nos acercamos peligrosamente al borde del tablero y es mejor no colocar pieza (salvo doble).
+            limite2:        posiciones x por encima de las cuales nos acercamos peligrosamente al borde del tablero y es mejor no colocar pieza (salvo doble).
+            ancho_pieza:    ancho de la pieza.
+        Returns:
+            origen ([x, y]):    coordenadas (x,y) de la pieza que queremos jugar. Si solo usamos su indice, con poner [indice, 0] basta.
+            angulo_origen:      angulo (en grados) de la pieza que queremos jugar. Si solo usamos su indice, es bastante indiferente.
+            destino ([x, y]):   coordenadas (x,y) del lugar donde queremos colocar la pieza.
+            angulo_destino:     angulo (en grados) con el que queremos colocar la pieza.
+    """
+
+
     RATIO_DIST = 1.2
 
     if movimiento["movimiento"] == 'robar':
-        print('Hey, no deberias estar aqui!')
         return [-1, -1], -1, [-1, -1], -1
     
     pieza_robot = movimiento["pieza_robot"]

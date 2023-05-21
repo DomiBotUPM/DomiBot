@@ -199,10 +199,11 @@ class DominoVision:
         cv.destroyAllWindows()
 
     def ordenar_piezas(self, piezas):
-        """Ordenar piezas de derecha a izquierda, de arriba a abajo. 
+        """Ordenar piezas de derecha a izquierda, de arriba a abajo, según es conveniente para la interfaz con 
+        ROS a la hora de detectar las piezas propias.
 
         Args:
-            piezas
+            piezas (List[Piece]): Lista de piezas a ordenar.
         """
         longitud = max(piezas[0].size)
         piezas_ordenadas = []
@@ -214,6 +215,7 @@ class DominoVision:
 
         piezas_misma_vertical = []
         
+        # agrupar piezas con coordenadas horizontal similar
         for pieza in piezas_ordenadas_dcha_a_izda:   
             if not piezas_misma_vertical:
                 piezas_misma_vertical.append(pieza)
@@ -227,7 +229,7 @@ class DominoVision:
                 piezas_ordenadas.extend(piezas_ordenadas_arriba_a_abajo)
                 piezas_misma_vertical = [pieza]
 
-        # una ultima vez ordenar en funcion de su vertical
+        # una ultima vez, ordenar en funcion de su vertical
         valor_vertical = [pieza_mv.center[1] for pieza_mv in piezas_misma_vertical]
         ind_orden = sorted(range(len(piezas_misma_vertical)), key=lambda k: valor_vertical[k])
         piezas_ordenadas_arriba_a_abajo = [piezas_misma_vertical[ind_orden[i]] for i in range(len(piezas_misma_vertical))]

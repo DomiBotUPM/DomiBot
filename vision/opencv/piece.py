@@ -9,7 +9,7 @@ class Piece:
             mask (np.ndarray): Mascara que contiene. Puede utilizarse para identificacion
             contour (np.ndarray): Contorno de la ficha
             center (tuple): Centro de la pieza
-            angle (float): Angulo de rotacion
+            angle (float): Angulo de rotacion (0 o 180 = horizontal, 90 = vertical)
             size (tuple): Tamano
             type (str, optional): Tipo de pieza. Defaults to "" (cuando aun no se ha identificado la pieza).
         """
@@ -62,24 +62,56 @@ class Piece:
             return False
           
     def esDoble(self):
+        """La pieza es un doble.
+
+        Args:
+            piece (Piece): pieza
+
+        Returns:
+            bool: True: es un doble. False: no lo es.
+        """
         if self.type[0] == self.type[2]:
             return True
         else:
             return False
         
     def esVertical(self):
-        if abs(self.angle - 90) < 30:
+        """La pieza es más vertical que horizontal.
+
+        Args:
+            piece (Piece): pieza
+
+        Returns:
+            bool: True: es vertical. False: es horizontal.
+        """
+        if abs(self.angle - 45) < 45:
             return True
         else:
             return False
 
     def esHorizontal(self):
-        if abs(self.angle) < 30:
+        """La pieza es más horizontal que vertical.
+
+        Args:
+            piece (Piece): pieza
+
+        Returns:
+            bool: True: es horizontal. False: es vertical.
+        """
+        if abs(self.angle) < 45 or abs(self.angle - 180) < 45:
             return True
         else:
             return False
 
     def sumaValor(self):
+        """Suma de los valores de la pieza, v1 + v2.
+
+        Args:
+            piece (Piece): pieza
+
+        Returns:
+            int: Valor total de la pieza.
+        """
         return int(self.type[0]) + int(self.type[2])
     
     def __ne__(self, piece):

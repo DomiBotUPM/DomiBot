@@ -1,16 +1,35 @@
-# import sys
-# sys.path.append("..\vision")
-
 import numpy as np
 from .pieza_sencilla import PiezaSencilla
 
+# Logica sencilla para un juego de domino
+
 def distanciaPiezas(pieza1, pieza2, orden):
+    """Distancia entre los centros de dos piezas (o piezas sencillas), definida segun una norma del orden especificado.
+    
+        Args:
+            pieza1: pieza.
+            pieza2: pieza.
+            orden:  orden de la norma.
+        Returns:
+            distancia entre las piezas.
+    """
+
     c1 = np.array(pieza1.center)
     c2 = np.array(pieza2.center)
 
     return np.linalg.norm(c1 - c2, ord = orden)
 
 def masCercanos(pieza_elegida, piezas, orden):
+    """Distancias de un conjunto de piezas a otra pieza. Ademas, devuelve tambien el orden en el que se encuentran, de menor a mayor distancia.
+    
+        Args:
+            pieza_elegida:  pieza respecto a la que se calculan las distancias del resto de piezas.
+            piezas (List[pieza_sencilla] o List[Piece]): array de piezas de las cuales se van a calcular las distancias. 
+            orden:  orden de la norma para calcular las distancias.
+        Returns:
+            indices_orden:  indices de las piezas ordenadas de menor a mayor distancia.
+            distancias:     distancias de las piezas a la pieza elegida (desordenadas).
+    """
     distancias = []
 
     for pieza in piezas:
@@ -21,6 +40,14 @@ def masCercanos(pieza_elegida, piezas, orden):
     return indices_orden, distancias
 
 def numeroComun(pieza1, pieza2):
+    """Numero en comun entre las piezas (sencillas).
+    
+        Args:
+            pieza1 (pieza_sencilla).
+            pieza2 (pieza_sencilla).
+        Returns:
+            numero_comun: numero comun a las piezas. -1 si no existe.
+    """
     if pieza1.v1 == pieza2.v1:
         return pieza1.v1
     elif pieza1.v1 == pieza2.v2:
@@ -33,6 +60,15 @@ def numeroComun(pieza1, pieza2):
         return -1
     
 def numeroDiferenteExtremo(pieza_extremo, pieza_interior):
+    """Dada una pieza en un extremo y una pieza que esta en el interior, devuelve cual es el numero del extremo.
+    Para ello, compara los numeros iguales de las piezas, y devuelve el numero contrario, en la pieza del extremo.
+    
+        Args:
+            pieza_extremo (pieza_sencilla).
+            pieza_interior (pieza_sencilla).
+        Returns:
+            numero_diferente_extremo: numero no comun en las pieza del extremo. -1 si hay algun error raro y todos los numeros son distintos.
+    """
     if pieza_extremo.v1 == pieza_interior.v1:
         return pieza_extremo.v2
     elif pieza_extremo.v1 == pieza_interior.v2:
@@ -45,6 +81,13 @@ def numeroDiferenteExtremo(pieza_extremo, pieza_interior):
         return -1
 
 def extremosTablero(tablero):
+    """Devuelve los numeros de los extremos del tablero, es decir, los numeros en los que hay que poner la pieza.
+    
+        Args:
+            tablero (List[pieza_sencilla]): tablero ordenado de piezas.
+        Returns:
+            [numero_extremo_1, numero_extremo_2].
+    """
     if len(tablero) == 0:
         return []
     elif len(tablero) == 1: # en teoria siempre deberia ser doble pero bueeeno
@@ -59,6 +102,15 @@ def extremosTablero(tablero):
 
 
 def jugadasDisponibles(tablero, piezas_robot):
+    """Calcula todas las posibles piezas que el robot podria poner en cada extremo del tablero.
+    
+        Args:
+            tablero (List[pieza_sencilla]): tablero ordenado de piezas.
+            piezas_robot (List[pieza_sencilla]): piezas disponibles.
+        Returns:
+            posibles_jugadas_1 (List[pieza_sencilla]): piezas que podria poner en el primer extremo del tablero.
+            posibles_jugadas_2 (List[pieza_sencilla]): piezas que podria poner en el segundo extremo del tablero.
+    """
     extremos = extremosTablero(tablero)
 
     if len(extremos) == 0:
@@ -77,6 +129,16 @@ def jugadasDisponibles(tablero, piezas_robot):
 
 # solo para test, bastante inutil
 def clasificarPiezas(piezas, alto_imagen, alto_zona_robot):
+    """Esto lo uso para hacer algun test. Divide las piezas que hay arriba y las que hay abajo en dos, siendo las de arriba el tablero, y las de abajo las disponibles.
+    
+        Args:
+            piezas (List[pieza_sencilla]): piezas.
+            alto_imagen: alto (no necesariamente en pixeles de la imagen.
+            alto_zona_robot: cuanto de la parte de abajo de la imagen son piezas disponibles.
+        Returns:
+            piezas_tablero (List[pieza_sencilla]): piezas del tablero.
+            piezas_robot (List[pieza_sencilla]): piezas disponibles para el robot.
+    """
     piezas_tablero= [] 
     piezas_robot = []
 
@@ -97,6 +159,17 @@ def clasificarPiezas(piezas, alto_imagen, alto_zona_robot):
 
 
 def tableroVirtual(piezas, umbral_dist, orden):
+    """Crea un tablero virtual. Para ello, ordena las piezas de la zona de juego, agrupandolas en una cadena de piezas contiguas.
+    No comprueba que necesariamente las jugadas sean validas, solo las une en funcion de la distancia entre estas.
+    La primera pieza siempre es la del extremo superior (o izquierdo).
+    
+        Args:
+            piezas (List[pieza_sencilla]): piezas.
+            umbral_dist: valor que indica cuanto de cerca tienen que estar los centros de las piezas para considerarse contiguas.
+            orden:  orden de la norma para calcular las distancias.
+        Returns:
+            tablero (List[pieza_sencilla]): piezas ordenadas del tablero.
+    """
     if len(piezas) == 1:
         return piezas
     elif len(piezas) == 2:
@@ -131,7 +204,7 @@ def tableroVirtual(piezas, umbral_dist, orden):
                 break
 
     # comprobar siempre rama superior o inferior
-    if tablero[0].center[1] < tablero[-1].center[1] - umbral_dist / 2: # el 10 este esta por ejemplo
+    if tablero[0].center[1] < tablero[-1].center[1] - umbral_dist / 2: 
         tablero.reverse() 
     elif tablero[0].center[1] < tablero[-1].center[1] + umbral_dist / 2:
         if tablero[0].center[0] < tablero[-1].center[0]:
@@ -141,6 +214,21 @@ def tableroVirtual(piezas, umbral_dist, orden):
 
 
 def decidirMovimiento(tablero, piezas_robot): # aqui viene toda la IA :)
+    """En funcion del tablero (conjunto ordenado de piezas contiguas que forman una partida de domino), decide la jugada que hacer.
+    De momento, intenta usar la pieza de mayor valor posible.
+    
+        Args:
+            tablero (List[pieza_sencilla]):     piezas ordenadas del tablero. La primera pieza siempre es la del extremo superior (o izquierdo).
+            piezas_robot(List[pieza_sencilla]): piezas disponibles para el robot.
+        Returns:
+            movimientos (Dictionary): conjunto de ordenes que hay que jugar. Los valores son:
+            -Comunes:
+                'movimiento':       'jugada' si debe colocar una pieza. 'robar' si no hay pieza que pueda ser jugada.
+            -Si movimientos['movimiento'] = 'jugada'
+                'pieza_tablero':    pieza del tablero a continuacion de la cual el robot va a poner la suya.
+                'pieza_robot':      pieza del robot que se desea jugar.
+                'direccion':        en caso de que la ficha no se pueda colocar al lado debido a que se rebasan los limites del tablero, se debe colocar 'arriba' (extremo 1 del tablero) o 'abajo' (extremo dos del tablero).
+    """
     posibles_jugadas1, posibles_jugadas2 = jugadasDisponibles(tablero, piezas_robot)
 
     if len(posibles_jugadas1): # hay jugadas posibles para la primera ficha del tablero
