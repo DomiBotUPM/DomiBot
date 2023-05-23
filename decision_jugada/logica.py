@@ -17,7 +17,7 @@ def logica(valores_tablero, valores_robot):
             valores_robot:      array con los valores de las piezas, con un primer valor que indica si en esa posicion predefinida hay una pieza o no.
         Returns:
             List[]: [indice_pieza_a_colocar, x, y, angulo], con (x, y) posicion (en m) de donde queremos colocar la pieza, y el angulo (en grados) con el que se quiere colocar.
-        """
+    """
      
     ORDEN_NORMA = 2
     # LONGITUD_PIEZA  = 80 # en píxeles
@@ -28,9 +28,9 @@ def logica(valores_tablero, valores_robot):
     # limites para no colocar en los extremos
     # LIMITE1 = 100
     # LIMITE2 = 540
-    LIMITE1 = 0.050
-    LIMITE2 = 0.0314 - 0.050
-
+    LIMITE1 = .270 + .060 - .236/2 + .050
+    LIMITE2 = .270 + .060 + .236/2 - .050
+ 
     # interpretar los arrays que me pasan y convertirlos en piezas
     piezas_robot = robot2piezas(valores_robot)
     piezas_tablero = tablero2piezas(valores_tablero)
@@ -40,6 +40,12 @@ def logica(valores_tablero, valores_robot):
 
     # Decidir el movimiento
     movimiento = decidirMovimiento(tablero, piezas_robot)
+
+    print("movimiento = ")
+    print(movimiento['movimiento'])
+    if movimiento['movimiento'] == 'jugada':
+        print([movimiento['pieza_robot'].v1, movimiento['pieza_robot'].v2])
+        print([movimiento['pieza_tablero'].v1, movimiento['pieza_tablero'].v2])   
 
     # Coordenadas del movimiento (origne, destino) -> coordenadas imagen
     origen, angulo_origen, destino, angulo_destino = colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
@@ -74,6 +80,12 @@ def logica_test(piezas_tablero, piezas_robot):
 
     # Decidir el movimiento
     movimiento = decidirMovimiento(tablero, piezas_robot)
+
+    print("movimiento = ")
+    print(movimiento['movimiento'])
+    if movimiento['movimiento'] == 'jugada':
+        print([movimiento['pieza_robot'].v1, movimiento['pieza_robot'].v2])
+        print([movimiento['pieza_tablero'].v1, movimiento['pieza_tablero'].v2]) 
 
     # Coordenadas del movimiento (origne, destino) -> coordenadas imagen
     origen, angulo_origen, destino, angulo_destino = colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)

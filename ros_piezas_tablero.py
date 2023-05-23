@@ -36,7 +36,7 @@ valores_piezas = []
 for pieza in recognitions:
     # primero, convertir las coordenadas a absolutas
     posicion_pieza = conversionCoordenadasJuego(pieza.center_mm[0], pieza.center_mm[1], pieza.angle)
-    posicion_pieza[0] /= 1000 # paso mm a m
+    posicion_pieza[0] /= 1000 #  paso mm a m
     posicion_pieza[1] /= 1000 # paso mm a m
     if len(pieza.dots) == 2:
         posicion_pieza.extend([pieza.dots[0], pieza.dots[1]])

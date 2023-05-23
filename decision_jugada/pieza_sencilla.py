@@ -98,7 +98,7 @@ def robot2piezas(valores_robot):
     for i in range(len(valores_robot)):
         if valores_robot[i][0]:
             pieza = PiezaSencilla(x=i, y=0, angle=0, v1=valores_robot[i][0], v2=valores_robot[i][1])
-        piezas.append(pieza)
+            piezas.append(pieza)
     return piezas
 
 
