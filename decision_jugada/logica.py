@@ -35,6 +35,13 @@ def logica(valores_tablero, valores_robot):
     piezas_robot = robot2piezas(valores_robot)
     piezas_tablero = tablero2piezas(valores_tablero)
 
+    print("piezas disponibles: ")
+    for pieza in piezas_robot:
+        print([pieza.centre[0], pieza.v1, pieza.v2])
+    print("tablero: ")
+    for pieza in piezas_tablero:
+        print([pieza.v1, pieza.v2])
+
     # Crear tablero virtual (ordenar las piezas)
     tablero = tableroVirtual(piezas_tablero, UMBRAL_DIST, ORDEN_NORMA)
 
