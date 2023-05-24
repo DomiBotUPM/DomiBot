@@ -19,18 +19,14 @@ def logica(valores_tablero, valores_robot):
             List[]: [indice_pieza_a_colocar, x, y, angulo], con (x, y) posicion (en m) de donde queremos colocar la pieza, y el angulo (en grados) con el que se quiere colocar.
     """
      
-    ORDEN_NORMA = 2
-    # LONGITUD_PIEZA  = 80 # en píxeles
-    # ANCHURA_PIEZA   = 40 # en píxeles  
-    LONGITUD_PIEZA  = 0.038 # en m
-    ANCHURA_PIEZA   = 0.019 # en m
-    UMBRAL_DIST     = LONGITUD_PIEZA * 1.5
+    ORDEN_NORMA     = 2                     # orden de la norma para calcular la distancia entre piezas
+    LONGITUD_PIEZA  = 0.038                 # en m
+    ANCHURA_PIEZA   = 0.019                 # en m
+    UMBRAL_DIST     = LONGITUD_PIEZA * 1.5  # maxima separacion entre ìezas para considerarlas contiguas
     # limites para no colocar en los extremos
-    # LIMITE1 = 100
-    # LIMITE2 = 540
     # LIMITE1 = .270 + .060 - .236/2 + .050
     # LIMITE2 = .270 + .060 + .236/2 - .050
-    LIMITE2 = -(.270  - .314/2 + .050)
+    LIMITE2 = -(.270  - .314/2 + .050)      
     LIMITE1 = -(.270  + .314/2 - .050)
  
     # interpretar los arrays que me pasan y convertirlos en piezas
@@ -39,21 +35,25 @@ def logica(valores_tablero, valores_robot):
 
     print("piezas disponibles: ")
     for pieza in piezas_robot:
-        print([pieza.centre[0], pieza.v1, pieza.v2])
+        print([pieza.center[0], pieza.v1, pieza.v2])
 
     print("piezas del tablero: ")
+    for pieza in tablero:
+        print([pieza.center, pieza.v1, pieza.v2])
+        
     for i in range(len(piezas_tablero)):
         new_x = -piezas_tablero[i].center[1] # -y
         new_y = -piezas_tablero[i].center[0] # -x
         piezas_tablero[i].center = [new_x, new_y]
-        print([pieza.v1, pieza.v2])
+        
+
 
     # Crear tablero virtual (ordenar las piezas)
     tablero = tableroVirtual(piezas_tablero, UMBRAL_DIST, ORDEN_NORMA)
 
     print("tablero: ")
     for pieza in tablero:
-        print([pieza.v1, pieza.v2])
+        print([pieza.center, pieza.v1, pieza.v2])
 
     # Decidir el movimiento
     movimiento = decidirMovimiento(tablero, piezas_robot)
@@ -81,9 +81,9 @@ def logica_test(piezas_tablero, piezas_robot):
         Returns:
             List[]: [x_pieza_robot, y_pieza_robot, angulo_pieza_robot, x_destino, y_destino, angulo_destino], con (x, y) posicion (en pixeles) de la pieza a jugar o de donde queremos colocar la pieza, y el angulo (en grados) de la pieza y con el que se quiere colocar.
         """
-    ORDEN_NORMA = 2
-    LONGITUD_PIEZA  = 80 # en píxeles
-    ANCHURA_PIEZA   = 40 # en píxeles  
+    ORDEN_NORMA     = 2     # orden de la norma para calcular la distancia entre piezas
+    LONGITUD_PIEZA  = 80    # en píxeles
+    ANCHURA_PIEZA   = 40    # en píxeles  
     # LONGITUD_PIEZA  = 0.038 # en m
     # ANCHURA_PIEZA   = 0.019 # en m
     UMBRAL_DIST     = LONGITUD_PIEZA * 1.5

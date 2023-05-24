@@ -25,7 +25,7 @@ domino_vision = DominoVision(visualize=False, verbose=False)
 # Probar con imagenes
 
 path_dir = os.path.abspath("vision/fotos_test/")
-file_robot = "robot4.jpg"
+file_robot = "robot3.jpg"
 file_tablero = "tablero1.jpg"
 
 filename_robot = os.path.join(path_dir, file_robot)

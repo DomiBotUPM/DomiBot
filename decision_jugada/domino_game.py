@@ -90,7 +90,7 @@ def extremosTablero(tablero):
     """
     if len(tablero) == 0:
         return []
-    elif len(tablero) == 1: # en teoria siempre deberia ser doble pero bueeeno
+    elif len(tablero) == 1: # en teoria siempre deberia ser doble pero bueno
         if tablero[0].esDoble():
             return [tablero[0].v1, tablero[0].v1]
         else:

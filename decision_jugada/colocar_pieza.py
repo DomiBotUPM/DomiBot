@@ -95,6 +95,76 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
     origen = pieza_robot.center
     angulo_origen = pieza_robot.angle
 
+    # ------------- SOLO HAY UNA PIEZA ----------------
+    # no  voy a considerar que no haya piezas -> que de eso se encargue otro jeje
+    if len(tablero) == 1: 
+        # ROBOT DOBLE + HORIZONTAL + A LA IZQUIERDA
+        if pieza_robot.esDoble() and pieza_tablero.esHorizontal():
+            if pieza_tablero.v1 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0] - longitud_pieza, pieza_tablero.center[1]]
+                angulo_destino = 90
+        # ROBOT DOBLE + HORIZONTAL + A LA DERECHA
+            else:
+                destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1]]
+                angulo_destino = 90
+        # ROBOT DOBLE + VERTICAL + ARRIBA
+        elif pieza_robot.esDoble() and pieza_tablero.esVertical():
+            if pieza_tablero.v1 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza]
+                angulo_destino = 0
+        # ROBOT DOBLE + VERTICAL + ABAJO
+            else:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza]
+                angulo_destino = 0
+        # TABLERO DOBLE HORIZONTAL + ABAJO
+        elif pieza_tablero.esDoble() and pieza_tablero.esHorizontal():
+            if pieza_tablero.v1 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza]
+                angulo_destino = 90
+        # TABLERO DOBLE HORIZONTAL + ARRIBA
+            else:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza]
+                angulo_destino = 90
+        # TABLERO DOBLE VERTICAL + A LA DERECHA
+        elif pieza_tablero.esDoble() and pieza_tablero.esVertical():
+            if pieza_tablero.v1 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1]]
+                angulo_destino = 0
+        # TABLERO DOBLE VERTICAL + A LA IZQUIERDA
+            else:
+                destino = [pieza_tablero.center[0] - longitud_pieza, pieza_tablero.center[1]]
+                angulo_destino = 0
+        # VERTICAL + ARRIBA
+        elif pieza_tablero.esVertical():
+            if pieza_tablero.v1 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza*RATIO_DIST]
+                angulo_destino = -90
+            elif pieza_tablero.v1 == pieza_robot.v2:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] - longitud_pieza*RATIO_DIST]
+                angulo_destino = 90
+        # VERTICAL + ABAJO
+            elif pieza_tablero.v2 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza*RATIO_DIST]
+                angulo_destino = 90
+            elif pieza_tablero.v2 == pieza_robot.v2:
+                destino = [pieza_tablero.center[0], pieza_tablero.center[1] + longitud_pieza*RATIO_DIST]
+                angulo_destino = -90
+        # HORIZONTAL + IZQUIERDA
+        elif pieza_tablero.esHorizontal():
+            if pieza_tablero.v1 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0] - longitud_pieza*RATIO_DIST, pieza_tablero.center[1] ]
+                angulo_destino = 180
+            elif pieza_tablero.v1 == pieza_robot.v2:
+                destino = [pieza_tablero.center[0] - longitud_pieza*RATIO_DIST, pieza_tablero.center[1]]
+                angulo_destino = 0
+        # VERTICAL + DERECHA
+            elif pieza_tablero.v2 == pieza_robot.v1:
+                destino = [pieza_tablero.center[0] + longitud_pieza*RATIO_DIST, pieza_tablero.center[1]]
+                angulo_destino = 0
+            elif pieza_tablero.v2 == pieza_robot.v2:
+                destino = [pieza_tablero.center[0] + longitud_pieza*RATIO_DIST, pieza_tablero.center[1]]
+                angulo_destino = 180
+
     # ------------- PIEZA ROBOT DOBLE ----------------
     if pieza_robot.esDoble():
         # HORIZONTAL + A LA IZQUIERDA
@@ -194,7 +264,7 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
         # VERTICAL + ABAJO
         elif movimiento["direccion"] == 'abajo':
             # poner a la izquierda o derecha
-            if piezasVerticalSeguidas(tablero, 'abajo', ancho_pieza) >= 3:
+            if piezasVerticalSeguidas(tablero, 'abajo', ancho_pieza) >= 2:
                 # poner a la derecha (estas en izquierda)
                 if abs(pieza_tablero.center[0] - limite1) < abs(pieza_tablero.center[0] - limite2):
                     destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1] + ancho_pieza/2]
@@ -210,7 +280,7 @@ def colocarPieza(movimiento, limite1, limite2, longitud_pieza, ancho_pieza, tabl
         # VERTICAL + ARRIBA
         else:
             # poner a la izquierda o derecha
-            if piezasVerticalSeguidas(tablero, 'arriba', ancho_pieza) >= 3:
+            if piezasVerticalSeguidas(tablero, 'arriba', ancho_pieza) >= 2:
                 # poner a la derecha (estas en izquierda)
                 if abs(pieza_tablero.center[0] - limite1) < abs(pieza_tablero.center[0] - limite2):
                     destino = [pieza_tablero.center[0] + longitud_pieza, pieza_tablero.center[1] - ancho_pieza/2]
