@@ -38,13 +38,13 @@ class DominoVision:
         """
         return preprocessing_img(img, open_size=open_size, visualize=self.visualize)
     
-    def pieces_recognition(self, img, size, pieces=[], preprocess=True):
+    def pieces_recognition(self, img, size, size_mm=0.0, pieces=[], preprocess=True):
         """Identificacion de piezas
 
         Returns:
             List[dict]: Lista de piezas reconocidas.
         """
-        identifier = PiecesIdentifier(img, size, pieces, preprocess=preprocess, visualize=self.visualize, verbose=self.verbose)
+        identifier = PiecesIdentifier(img, size, size_mm, pieces, preprocess=preprocess, visualize=self.visualize, verbose=self.verbose)
         self.pieces = identifier.pieces_recognition()
         return self.pieces
     
@@ -162,7 +162,7 @@ class DominoVision:
             
             # if self.detect_new_turn():
             #     print("Nuevo turno!")
-            time.sleep(2)
+            time.sleep(0.5)
             if cv.waitKey(20) & 0xFF==ord('d'):
                 break
         capture.release()

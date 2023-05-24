@@ -9,7 +9,7 @@ from .pieces_detection_v3 import PiecesDetector
 from .piece import Piece
 
 class PiecesIdentifier:
-    def __init__(self, img, size, pieces=[], preprocess=True, verbose=False, visualize=False):
+    def __init__(self, img, size, size_mm=0.0, pieces=[], preprocess=True, verbose=False, visualize=False):
         """Inicializar detector de piezas
 
         Args:
@@ -31,6 +31,7 @@ class PiecesIdentifier:
         self.PIECE_HEIGHT_MM = 38
         
         self.processed_img = self.__preprocess_img(img)
+        self.size_mm = size_mm
 
     def __preprocess_img(self, img):
         if self.preprocess:
@@ -181,7 +182,7 @@ class PiecesIdentifier:
         """
         img_i = self.img.copy()
         if not len(self.pieces):
-            detector = PiecesDetector(self.processed_img,size=self.size, preprocess=False, visualize=False, verbose=self.verbose)
+            detector = PiecesDetector(self.processed_img,size=self.size, size_mm=self.size_mm, preprocess=False, visualize=False, verbose=self.verbose)
             self.pieces = detector.detect_pieces()
         
         if self.verbose: print("*"*20, "Se ha iniciado el reconocimiento de piezas", "*"*20)
