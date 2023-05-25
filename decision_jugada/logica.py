@@ -1,13 +1,14 @@
-# import sys
-# sys.path.append("..\vision")
+import sys
+sys.path.append("..\vision")
 
 from .colocar_pieza import colocarPieza
 from .domino_game import tableroVirtual, decidirMovimiento
 from .pieza_sencilla import PiezaSencilla, tablero2piezas, robot2piezas
+from vision.conversion_coordenadas import conversionCoordenadasJuego
 
 def logica(valores_tablero, valores_robot):
     """Casi toda la logica. 
-    A partir de las piezas que ahy jugadas sobre la mes (tablero), y las que tiene disponibles el robot, se decide la pieza a colocar y donde colocarla.
+    A partir de las piezas que hay jugadas sobre la mes (tablero), y las que tiene disponibles el robot, se decide la pieza a colocar y donde colocarla.
     Las piezas del tablero se indican como:
     [[pieza1.x, pieza1.y, pieza1.angulo, pieza1.valor1, pieza1.valor2], [pieza2.x, pieza2.y, pieza2.angulo, pieza2.valor1, pieza2.valor2], ...]
     Las piezas disponibles se indican como:
@@ -20,34 +21,29 @@ def logica(valores_tablero, valores_robot):
     """
      
     ORDEN_NORMA     = 2                     # orden de la norma para calcular la distancia entre piezas
-    LONGITUD_PIEZA  = 0.038                 # en m
-    ANCHURA_PIEZA   = 0.019                 # en m
+    # LONGITUD_PIEZA  = 0.038                 # en m
+    # ANCHURA_PIEZA   = 0.019                 # en m
+    # UMBRAL_DIST     = LONGITUD_PIEZA * 1.5  # maxima separacion entre ìezas para considerarlas contiguas
+    # # # limites para no colocar en los extremos
+    # # LIMITE2 = -(.270  - .314 + .050)      
+    # # LIMITE1 = -(.270  + .314/2 - .050)
+    # LIMITE1 = 0.050
+    # LIMITE2 = 0.314 - 0.050
+    # # 218 y 290
+
+    LONGITUD_PIEZA  = 38                 # en mm
+    ANCHURA_PIEZA   = 19                 # en mm
     UMBRAL_DIST     = LONGITUD_PIEZA * 1.5  # maxima separacion entre ìezas para considerarlas contiguas
-    # limites para no colocar en los extremos
-    # LIMITE1 = .270 + .060 - .236/2 + .050
-    # LIMITE2 = .270 + .060 + .236/2 - .050
-    LIMITE2 = -(.270  - .314/2 + .050)      
-    LIMITE1 = -(.270  + .314/2 - .050)
+    # # limites para no colocar en los extremos
+    LIMITE1 = 50
+    LIMITE2 = 314 - 50
+
+    # alto_zona_juego = 236, ancho_zona_juego = 314
  
     # interpretar los arrays que me pasan y convertirlos en piezas
     piezas_robot = robot2piezas(valores_robot)
     piezas_tablero = tablero2piezas(valores_tablero)
-
-    print("piezas disponibles: ")
-    for pieza in piezas_robot:
-        print([pieza.center[0], pieza.v1, pieza.v2])
-
-    print("piezas del tablero: ")
-    for pieza in tablero:
-        print([pieza.center, pieza.v1, pieza.v2])
         
-    for i in range(len(piezas_tablero)):
-        new_x = -piezas_tablero[i].center[1] # -y
-        new_y = -piezas_tablero[i].center[0] # -x
-        piezas_tablero[i].center = [new_x, new_y]
-        
-
-
     # Crear tablero virtual (ordenar las piezas)
     tablero = tableroVirtual(piezas_tablero, UMBRAL_DIST, ORDEN_NORMA)
 
@@ -55,20 +51,24 @@ def logica(valores_tablero, valores_robot):
     for pieza in tablero:
         print([pieza.center, pieza.v1, pieza.v2])
 
-    # Decidir el movimiento
-    movimiento = decidirMovimiento(tablero, piezas_robot)
+    # Decidir la accion
+    accion = decidirMovimiento(tablero, piezas_robot)
 
-    print("movimiento = ")
-    print(movimiento['movimiento'])
-    if movimiento['movimiento'] == 'jugada':
-        print([movimiento['pieza_robot'].v1, movimiento['pieza_robot'].v2])
-        print([movimiento['pieza_tablero'].v1, movimiento['pieza_tablero'].v2])   
+    print("accion = ")
+    print(accion['movimiento'])
+    if accion['movimiento'] == 'jugada':
+        print([accion['pieza_robot'].v1, accion['pieza_robot'].v2])
+        print([accion['pieza_tablero'].v1, accion['pieza_tablero'].v2])   
 
-    # Coordenadas del movimiento (origne, destino) -> coordenadas imagen
-    origen, angulo_origen, destino, angulo_destino = colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
+    # Coordenadas del accion (origen, destino) -> coordenadas imagen
+    origen, angulo_origen, destino, angulo_destino = colocarPieza(accion, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
 
-    return [origen[0], -destino[1], -destino[0], angulo_destino]
-    # return [origen[0], destino[0], destino[1], angulo_destino]
+    # return [origen[0], -destino[1], -destino[0], angulo_destino]
+
+    # la conversión de coordenadas va aquí
+    newx, newy, newangle = conversionCoordenadasJuego(destino[0], destino[1], angulo_destino)
+
+    return [origen[0], newx/1000, newy/1000, newangle]
 
 
 def logica_test(piezas_tablero, piezas_robot):
@@ -96,16 +96,21 @@ def logica_test(piezas_tablero, piezas_robot):
     # Crear tablero virtual (ordenar las piezas)
     tablero = tableroVirtual(piezas_tablero, UMBRAL_DIST, ORDEN_NORMA)
 
-    # Decidir el movimiento
-    movimiento = decidirMovimiento(tablero, piezas_robot)
+    print("tablero: ")
+    for pieza in tablero:
+        print([pieza.center, pieza.v1, pieza.v2])
 
-    print("movimiento = ")
-    print(movimiento['movimiento'])
-    if movimiento['movimiento'] == 'jugada':
-        print([movimiento['pieza_robot'].v1, movimiento['pieza_robot'].v2])
-        print([movimiento['pieza_tablero'].v1, movimiento['pieza_tablero'].v2]) 
+    # Decidir la accion
+    accion = decidirMovimiento(tablero, piezas_robot)
 
-    # Coordenadas del movimiento (origne, destino) -> coordenadas imagen
-    origen, angulo_origen, destino, angulo_destino = colocarPieza(movimiento, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
+    print("accion = ")
+    print(accion['movimiento'])
+    if accion['movimiento'] == 'jugada':
+        print([accion['pieza_robot'].v1, accion['pieza_robot'].v2])
+        print([accion['pieza_tablero'].v1, accion['pieza_tablero'].v2]) 
+        print([accion['direccion']])
+
+    # Coordenadas del accion (origne, destino) -> coordenadas imagen
+    origen, angulo_origen, destino, angulo_destino = colocarPieza(accion, LIMITE1, LIMITE2, LONGITUD_PIEZA, ANCHURA_PIEZA, tablero)
 
     return [origen[0], origen[1], angulo_origen, destino[0], destino[1], angulo_destino]

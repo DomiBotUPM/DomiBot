@@ -25,12 +25,12 @@ domino_vision = DominoVision(visualize=False, verbose=False)
 # Probar con imagenes
 
 path_dir = os.path.abspath("vision/fotos_test/")
-file_robot = "robot3.jpg"
-file_tablero = "tablero1.jpg"
+
+file_robot = "robotdoble.jpg"
+file_tablero = "tablerounapieza.jpg"
 
 filename_robot = os.path.join(path_dir, file_robot)
 img_robot = cv2.imread(filename_robot)
-
 
 
 filename_tablero = os.path.join(path_dir, file_tablero)
@@ -39,15 +39,13 @@ img_tablero = cv2.imread(filename_tablero)
 
 size = img_robot.shape[0]*img_robot.shape[1]
 
+# visión
 detections_tablero = domino_vision.pieces_detection(img_tablero, size, size_mm=0)
 recognitions_tablero = domino_vision.pieces_recognition(img_tablero, size, pieces=detections_tablero)
-
-cv2.waitKey(0)
 
 detections_robot = domino_vision.pieces_detection(img_robot, size, size_mm=0)
 recognitions_robot = domino_vision.pieces_recognition(img_robot, size, pieces=detections_robot)
 
-cv2.waitKey(0)
 
 print("recognitions tablero")
 for pieza in recognitions_tablero:
