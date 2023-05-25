@@ -1,4 +1,4 @@
-def conversionCoordenadasJuego(x_pieza_coord_img, y_pieza_coord_img, theta_pieza_coord_img, x_gripper_abs = 270, y_gripper_abs = 196, alto_zona_juego = 236, ancho_zona_juego = 314, x_camara_resp_gripper = 60, y_camara_resp_gripper = -25):
+def conversionCoordenadasJuego(x_pieza_coord_img, y_pieza_coord_img, theta_pieza_coord_img, x_gripper_abs = 270, y_gripper_abs = 196, alto_zona_juego = 236, ancho_zona_juego = 314, x_camara_resp_gripper = 50, y_camara_resp_gripper = -22):
     """Conversion de coordenadas de la pieza en la imagen (en mm, no en pixeles) a las coordenadas absolutas de la pieza, respecto de la base del robot.
         Args:
             x_pieza_coord_img:      coordenada x de la pieza respecto de la esquina superior izquierda de la imagen, en mm
