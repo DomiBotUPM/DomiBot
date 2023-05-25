@@ -54,7 +54,7 @@ def logica(valores_tablero, valores_robot):
     # Decidir la accion
     accion = decidirMovimiento(tablero, piezas_robot)
 
-    print("accion = ")
+    print("accion: ")
     print(accion['movimiento'])
     if accion['movimiento'] == 'jugada':
         print([accion['pieza_robot'].v1, accion['pieza_robot'].v2])
@@ -65,8 +65,14 @@ def logica(valores_tablero, valores_robot):
 
     # return [origen[0], -destino[1], -destino[0], angulo_destino]
 
+    print("coordenadas originales: ")
+    print([destino, angulo_destino])
+
     # la conversión de coordenadas va aquí
     newx, newy, newangle = conversionCoordenadasJuego(destino[0], destino[1], angulo_destino)
+
+    print("coordenadas nuevas mm: ")
+    print([newx, newy, angulo_destino])
 
     return [origen[0], newx/1000, newy/1000, newangle]
 
